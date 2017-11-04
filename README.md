@@ -16,9 +16,12 @@ new PhotoImageLayout.Builder(MainActivity.this)
                         .setImageBackgroundColor(Color.BLACK)
                         .setImageDefaultPosition(0)
                         .setImageDefaultResource(R.mipmap.ic_launcher)
+                         #imageview集合
                         .setImageList(image, image2, image3)
-                        .setImageUrlList("http://sjbz.fd.zol-img.com.cn/t_s1080x1920c/g5/M00/05/0D/ChMkJ1myURyIcWL0AAXIZtwWvIEAAgSQQJ3DjUABch-255.jpg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
-                        .setImageLittleUrlList("http://sjbz.fd.zol-img.com.cn/t_s1080x1920c/g5/M00/05/0D/ChMkJ1myURyIcWL0AAXIZtwWvIEAAgSQQJ3DjUABch-255.jpg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
+                         #大图集合
+                        .setImageUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg")
+                         #小图集合
+                        .setImageLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg")
                         .show();
 ```
 
