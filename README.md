@@ -11,17 +11,14 @@
 ```
 使用方法：
 new PhotoImageLayout.Builder(MainActivity.this)
-                        .setImageLongPressSave(true)
-                        .setImageOpenTransAnim(true)
-                        .setImageBackgroundColor(Color.BLACK)
-                        .setImageDefaultPosition(0)
-                        .setImageDefaultResource(R.mipmap.ic_launcher)
-                         #imageview集合
-                        .setImageList(image, image2, image3)
-                         #大图集合
-                        .setImageUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg")
-                         #小图集合
-                        .setImageLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg")
+                        .setImageLongPressSave(true) //长按保存图片到图库
+                        .setImageOpenTransAnim(true) //渐变动画
+                        .setImageBackgroundColor(Color.BLACK) //背景颜色
+                        .setImageDefaultPosition(0) //默认索引位置
+                        .setImageDefaultResource(R.mipmap.ic_launcher)  //默认占位图
+                        .setImageList(image, image2, image3) //imageview集合
+                        .setImageUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
+                        .setImageLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
                         .show();
 ```
 
