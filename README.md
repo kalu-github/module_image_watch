@@ -12,15 +12,15 @@ http://www.jianshu.com/p/36931e1d3c84
 ```
 使用方法：
 
-new PhotoImageLayout.Builder(MainActivity.this)
-                        .setImageLongPressSave(true) //长按保存图片到图库
-                        .setImageOpenTransAnim(true) //渐变动画
-                        .setImageBackgroundColor(Color.BLACK) //背景颜色
-                        .setImageDefaultPosition(0) //默认索引位置
-                        .setImageDefaultResource(R.mipmap.ic_launcher)  //默认占位图
-                        .setImageList(image, image2, image3) //imageview集合
-                        .setImageUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
-                        .setImageLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
+new PhotoLayout.Builder(MainActivity.this)
+                        .setPhotoLongPressSave(true) //长按保存图片到图库
+                        .setPhotoOpenTransAnim(true) //渐变动画
+                        .setPhotoBackgroundColor(Color.BLACK) //背景颜色
+                        .setPhotoDefaultPosition(0) //默认索引位置
+                        .setPhotoDefaultResource(R.mipmap.ic_launcher)  //默认占位图
+                        .setPhotoList(image, image2, image3) //imageview集合
+                        .setPhotoUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
+                        .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
                         .show();
 ```
 ```
