@@ -16,24 +16,24 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 class PhotoImageAdapter extends PagerAdapter {
 
     private Activity mActivity;
-    private PhotoImageLayout mPhotoImageLayout;
-    private PhotoImageLayoutAttr mPhotoImageLayoutAttr;
+    private PhotoLayout mPhotoLayout;
+    private PhotoLayoutAttr mPhotoLayoutAttr;
 
     public PhotoImageAdapter(Activity mActivity) {
         this.mActivity = mActivity;
     }
 
-    public void setImageAttr(PhotoImageLayoutAttr mPhotoImageLayoutAttr){
-        this.mPhotoImageLayoutAttr = mPhotoImageLayoutAttr;
+    public void setImageAttr(PhotoLayoutAttr mPhotoLayoutAttr){
+        this.mPhotoLayoutAttr = mPhotoLayoutAttr;
     }
 
-    public void setImageLayout(PhotoImageLayout mPhotoImageLayout){
-        this.mPhotoImageLayout = mPhotoImageLayout;
+    public void setImageLayout(PhotoLayout mPhotoLayout){
+        this.mPhotoLayout = mPhotoLayout;
     }
 
     @Override
     public int getCount() {
-        return mPhotoImageLayoutAttr.getImageCount();
+        return mPhotoLayoutAttr.getImageCount();
     }
 
     @Override
@@ -50,13 +50,13 @@ class PhotoImageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, final int position) {
 
         Context applicationContext = APP.getInstance().getApplicationContext();
-        final PhotoImageView newImage = new PhotoImageView(applicationContext);
-        newImage.setImageUrl(mPhotoImageLayoutAttr.getImageLittleUrlList().get(position));
-        newImage.setImaageLongPressSave(mPhotoImageLayoutAttr.isImaageLongPressSave());
-        newImage.setPhotoImageLayout(mPhotoImageLayout);
-        newImage.setOnImageChangeListener(mPhotoImageLayoutAttr.getOnImageChangeListener());
+        final PhotoSubView newImage = new PhotoSubView(applicationContext);
+        newImage.setImageUrl(mPhotoLayoutAttr.getImageLittleUrlList().get(position));
+        newImage.setImaageLongPressSave(mPhotoLayoutAttr.isImaageLongPressSave());
+        newImage.setPhotoImageLayout(mPhotoLayout);
+        newImage.setOnImageChangeListener(mPhotoLayoutAttr.getOnPhotoChangeListener());
 
-        String littleUrl = mPhotoImageLayoutAttr.getImageLittleUrlList().get(position);
+        String littleUrl = mPhotoLayoutAttr.getImageLittleUrlList().get(position);
         GlideUtil.loadImageOriginal(mActivity, newImage, littleUrl, null);
 
         // 2. 设置默认属性
