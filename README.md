@@ -1,4 +1,5 @@
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-21-21-40-47-458_20171121214225.gif ) 
+![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-15.gif ) 
 
 ```
 简书地址：
