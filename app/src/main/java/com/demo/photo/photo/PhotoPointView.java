@@ -1,8 +1,5 @@
 package com.demo.photo.photo;
 
-import android.animation.Animator;
-import android.animation.TimeInterpolator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -13,20 +10,15 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 
 import com.demo.photo.R;
-
-import java.util.Arrays;
 
 /**
  * description: 指示器
@@ -36,11 +28,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
 
     // 默认指示点半径
     private float mRadius;
-
-    private ValueAnimator animatorTouch;
-    private boolean isTouchAniming = false;
-    private float animatedTouchValue;
-    private RectF rectF_touch = new RectF();  //触摸反馈范围
 
     private int time_animator = 600;  //动画时间
     private Matrix matrix_bounceL;   //将向右弹的动画改为向左
@@ -69,12 +56,31 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
     private float boundRadio = 0.55f;  //进入另一个圆的回弹效果
 
     //展示QQ糖动画
-    private ValueAnimator animatorStart;
-    private TimeInterpolator timeInterpolator = new DecelerateInterpolator();
     private float animatedValue;
-    private boolean isAniming = false;
 
     private boolean direction; //方向 , true是位置向右(0->1)
+
+    /**
+     * 离开圆的阈值
+     */
+    private float disL = 0.5f;
+    /**
+     * 最大值的阈值
+     */
+    private float disM = 0.8f;
+    /**
+     * 到达下个圆的阈值
+     */
+    private float disA = 0.9f;
+
+
+    private float[] bezPos; //记录每一个圆心x轴的位置
+    private float[] xPivotPos;  //根据圆心x轴+mRadius，划分成不同的区域 ,主要为了判断触摸x轴的位置
+    private int curPos = 0;  //当前圆的位置
+    private int nextPos = 0; //圆要到达的下一个位置
+
+
+    private ViewPager mViewPage;
 
     /********************************************************************************************/
 
@@ -99,7 +105,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
 
         final float temp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics());
         mRadius = array.getDimension(R.styleable.PhotoPointView_ppv_point_radius, temp);
-        isTouchAniming = array.getBoolean(R.styleable.PhotoPointView_ppv_enable_touch, false);
 
         array.recycle();
 
@@ -211,25 +216,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
             return;
         }
 
-
-        if (isTouchAniming) {  //实现 触摸反馈
-            int count = canvas.saveLayer(rectF_touch, mTouchPaint, Canvas.ALL_SAVE_FLAG);
-            canvas.drawCircle(bezPos[nextPos], 0, animatedTouchValue, mTouchPaint);   //先画一个白色的圆 [0,mRadius*1.5]
-
-            mTouchPaint.setXfermode(clearXfermode);
-
-            canvas.drawCircle(bezPos[nextPos], 0, mRadius * 0.7f, mTouchPaint);  //从 0.7-1.4   效果会更好看！
-
-            if (animatedTouchValue >= mRadius) {             //如果白色的圆半径>=mRadis ，就开始绘制透明的圆
-                canvas.drawCircle(bezPos[nextPos], 0, (animatedTouchValue - mRadius) / 0.5f * 1.4f, mTouchPaint);
-            }
-            mTouchPaint.setXfermode(null);
-
-
-            canvas.restoreToCount(count);
-
-        }
-
         canvas.translate(bezPos[curPos], 0);
 
         if (0 < animatedValue && animatedValue <= disL) {
@@ -289,29 +275,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
 
     /********************************************************************************************/
 
-
-    /**
-     * 离开圆的阈值
-     */
-    private float disL = 0.5f;
-    /**
-     * 最大值的阈值
-     */
-    private float disM = 0.8f;
-    /**
-     * 到达下个圆的阈值
-     */
-    private float disA = 0.9f;
-
-
-    private float[] bezPos; //记录每一个圆心x轴的位置
-    private float[] xPivotPos;  //根据圆心x轴+mRadius，划分成不同的区域 ,主要为了判断触摸x轴的位置
-    private int curPos = 0;  //当前圆的位置
-    private int nextPos = 0; //圆要到达的下一个位置
-
-
-    private ViewPager mViewPage;
-
     /**
      * 关联ViewPager，监听scroll进行改变bezRound
      */
@@ -328,122 +291,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
         for (int i = 0; i < default_round_count; i++) {
             bezPos[i] = mWidth / (default_round_count + 1) * (i + 1);
             xPivotPos[i] = mWidth / (default_round_count + 1) * (i + 1) + mRadius;
-        }
-    }
-
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                float x = event.getX();
-                float y = event.getY();
-
-                if (y <= mHeight / 2 + mRadius && y >= mHeight / 2 - mRadius && !isAniming) {  //先判断y，如果y点击是在圆y轴的范围
-                    int pos = -Arrays.binarySearch(xPivotPos, x) - 1;
-                    if (pos >= 0 && pos < default_round_count && x + mRadius >= bezPos[pos]) {
-                        nextPos = pos;
-
-//                        Log.e(TAG, "ontouch  curPos" + curPos);
-//                        Log.e(TAG, "ontouch  nextPos" + nextPos);
-//                        Log.e(TAG, "ontouch  isAniming" + isAniming);
-                        if (mViewPage != null && curPos != nextPos) {
-
-                            mViewPage.setCurrentItem(pos);
-                            isAniming = true;
-                            direction = (curPos < pos);
-
-                            startAnimator();
-                            startTouchAnimator();
-                        }
-                    }
-                    return true;
-                }
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
-
-    public void startAnimator() {
-        if (animatorStart != null) {
-            if (animatorStart.isRunning()) {
-                return;
-            }
-            animatorStart.start();
-        } else {
-            animatorStart = ValueAnimator.ofFloat(0, 1f).setDuration(time_animator);
-            animatorStart.setInterpolator(timeInterpolator);
-            animatorStart.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    isAniming = true;
-                    animatedValue = (float) animation.getAnimatedValue();
-                    invalidate();
-
-                }
-            });
-            animatorStart.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                    isAniming = true;
-                    if (mViewPage != null) {
-
-                        mViewPage.setEnabled(false);
-                    }
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    isAniming = false;
-                    curPos = nextPos;
-                    if (mViewPage != null) {
-
-                        mViewPage.setEnabled(true);
-                    }
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                    isAniming = false;
-                    curPos = nextPos;
-                    if (mViewPage != null) {
-
-                        mViewPage.setEnabled(true);
-                    }
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                }
-            });
-
-            animatorStart.start();
-        }
-    }
-
-    private void startTouchAnimator() {
-        //设置触摸范围
-        rectF_touch.set(bezPos[nextPos] - mRadius * 1.5f, -mRadius * 1.5f, bezPos[nextPos] + mRadius * 1.5f, mRadius * 1.5f);
-
-        if (animatorTouch != null) {
-            if (animatorTouch.isRunning()) {
-                return;
-            }
-            animatorTouch.start();
-        } else {
-            animatorTouch = ValueAnimator.ofFloat(0, mRadius * 1.5f).setDuration(time_animator / 2);
-            animatorTouch.setInterpolator(timeInterpolator);
-            animatorTouch.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    animatedTouchValue = (float) animation.getAnimatedValue();
-                    if (animatedTouchValue == mRadius * 1.5f) {
-                        isTouchAniming = false;
-                    }
-                }
-            });
-            isTouchAniming = true;
-            animatorTouch.start();
         }
     }
 
@@ -478,9 +325,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
      */
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (isAniming)     //如果是手动选择pos，就用animatorValue去计算 0-->3
-            return;
-        //Log.w(TAG, "onPageScrolled positionOffset==" + positionOffset);
 
         animatedValue = positionOffset;
 

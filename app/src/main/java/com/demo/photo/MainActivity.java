@@ -40,5 +40,39 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+        image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                new PhotoLayout.Builder(MainActivity.this)
+                        .setPhotoLongPressSave(false)
+                        .setPhotoOpenTransAnim(true)
+                        .setPhotoBackgroundColor(Color.BLACK)
+                        .setPhotoDefaultPosition(1)
+                        .setPhotoDefaultResource(R.mipmap.ic_launcher)
+                        .setPhotoList(image, image2, image3)
+                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
+                        .setPhotoLittleUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
+                        .show();
+            }
+        });
+
+        image3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                new PhotoLayout.Builder(MainActivity.this)
+                        .setPhotoLongPressSave(false)
+                        .setPhotoOpenTransAnim(true)
+                        .setPhotoBackgroundColor(Color.BLACK)
+                        .setPhotoDefaultPosition(2)
+                        .setPhotoDefaultResource(R.mipmap.ic_launcher)
+                        .setPhotoList(image, image2, image3)
+                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
+                        .setPhotoLittleUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
+                        .show();
+            }
+        });
     }
 }
