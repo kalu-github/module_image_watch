@@ -33,7 +33,7 @@ import com.demo.photo.util.GlideUtil;
  * description: 可缩放、旋转、平移的ImageView，可加载超大图片（请使用set方法设置图片来源），完美解决OOM问题
  * created by kalu on 17-10-15 上午5:27
  */
-public class PhotoSubView extends AppCompatImageView {
+class PhotoSubView extends AppCompatImageView {
 
     private OnPhotoChangeListener mListener = null;
 
@@ -172,6 +172,7 @@ public class PhotoSubView extends AppCompatImageView {
 
     @Override
     public void setImageResource(int resId) {
+        @SuppressLint("ResourceType")
         InputStream is = getContext().getResources().openRawResource(resId);
         setInputStream(is);
     }

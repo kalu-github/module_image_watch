@@ -32,7 +32,7 @@ import java.util.Arrays;
  * description: 指示器 - 备份
  * created by kalu on 17-10-15 上午5:28
  */
-public class PhotoPointViewBackUp extends View implements ViewPager.OnPageChangeListener {
+class PhotoPointViewBackUp extends View implements ViewPager.OnPageChangeListener {
 
     // 默认指示点半径
     private float mRadius;
