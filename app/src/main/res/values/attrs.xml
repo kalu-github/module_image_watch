@@ -2,6 +2,8 @@
 <resources>
 
     <declare-styleable name="PhotoPointView">
+        <!-- 指示点触摸反馈动画 -->
+        <attr name="ppv_enable_touch" format="boolean" />
         <attr name="ppv_color_bez" format="color" />
         <attr name="ppv_color_touch" format="color" />
         <attr name="ppv_color_stroke" format="color" />

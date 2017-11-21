@@ -54,6 +54,8 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
         time_animator = array.getInteger(R.styleable.PhotoPointView_ppv_time_animator, time_animator);
         default_round_count = array.getInteger(R.styleable.PhotoPointView_ppv_round_count, default_round_count);
         mRadius = array.getDimensionPixelSize(R.styleable.PhotoPointView_ppv_radius2, mRadius);
+        isTouchAniming = array.getBoolean(R.styleable.PhotoPointView_ppv_enable_touch, false);
+
         array.recycle();
 
         DEFAULT_HEIGHT = mRadius * 3;
@@ -324,7 +326,6 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
             if (animatorTouch.isRunning()) {
                 return;
             }
-            isTouchAniming = true;
             animatorTouch.start();
         } else {
             animatorTouch = ValueAnimator.ofFloat(0, mRadius * 1.5f).setDuration(time_animator / 2);

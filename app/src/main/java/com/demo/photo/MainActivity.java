@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 new PhotoLayout.Builder(MainActivity.this)
-                        .setPhotoLongPressSave(true)
+                        .setPhotoLongPressSave(false)
                         .setPhotoOpenTransAnim(true)
                         .setPhotoBackgroundColor(Color.BLACK)
                         .setPhotoDefaultPosition(0)
