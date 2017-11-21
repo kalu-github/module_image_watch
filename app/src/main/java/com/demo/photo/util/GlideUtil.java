@@ -48,6 +48,8 @@ public class GlideUtil {
 
     private static final String TAG = GlideUtil.class.getSimpleName();
 
+    private static final String GIF = ".gif";
+
     private static final int defaultImage = R.mipmap.ic_launcher;
     private static final int errorImage = R.mipmap.ic_launcher;
 
@@ -145,10 +147,10 @@ public class GlideUtil {
                 GlideOkHttpClientManager.getInstance().setOnGlideLoadChangeListener(listener);
             }
 
-            if (isOriginal) {
+            // 需要显示加载过程, 不能是GIF图片
+            if (isOriginal && !url.toLowerCase().endsWith(GIF)) {
 
                 requestManager.asDrawable().load(url).apply(options).into(new SimpleTarget<Drawable>() {
-
                     @Override
                     public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
 
