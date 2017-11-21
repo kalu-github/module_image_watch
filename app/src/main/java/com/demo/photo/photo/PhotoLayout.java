@@ -341,12 +341,12 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
 
         private List<ImageView> imageViews;
 
-        public Builder setPhotoList(List<ImageView> imageViews) {
+        public Builder setPhotoViewList(List<ImageView> imageViews) {
             this.imageViews = imageViews;
             return this;
         }
 
-        public Builder setPhotoList(ImageView... views) {
+        public Builder setPhotoViewList(ImageView... views) {
             this.imageViews = Arrays.asList(views);
             return this;
         }
