@@ -47,26 +47,14 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
         mRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics());  //默认设置15dp
 
         // 获得我们所定义的自定义样式属性
-        TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BezierRoundView, defStyleAttr, 0);
-        color_bez = array.getColor(R.styleable.BezierRoundView_color_bez, color_bez);
-        color_touch = array.getColor(R.styleable.BezierRoundView_color_touch, color_touch);
-        color_stroke = array.getColor(R.styleable.BezierRoundView_color_stroke, color_stroke);
-        time_animator = array.getInteger(R.styleable.BezierRoundView_time_animator, time_animator);
-        default_round_count = array.getInteger(R.styleable.BezierRoundView_round_count, default_round_count);
-        mRadius = array.getDimensionPixelSize(R.styleable.BezierRoundView_radius2, mRadius);
+        TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PhotoPointView, defStyleAttr, 0);
+        color_bez = array.getColor(R.styleable.PhotoPointView_ppv_color_bez, color_bez);
+        color_touch = array.getColor(R.styleable.PhotoPointView_ppv_color_touch, color_touch);
+        color_stroke = array.getColor(R.styleable.PhotoPointView_ppv_color_stroke, color_stroke);
+        time_animator = array.getInteger(R.styleable.PhotoPointView_ppv_time_animator, time_animator);
+        default_round_count = array.getInteger(R.styleable.PhotoPointView_ppv_round_count, default_round_count);
+        mRadius = array.getDimensionPixelSize(R.styleable.PhotoPointView_ppv_radius2, mRadius);
         array.recycle();
-
-        init();
-    }
-
-    private final String TAG = "QDX";
-    private int time_animator = 600;  //动画时间
-    private Matrix matrix_bounceL;   //将向右弹的动画改为向左
-    private int color_bez = 0xfffe626d;
-    private int color_touch = 0xfffe626d;
-    private int color_stroke = Color.GRAY;
-
-    private void init() {
 
         DEFAULT_HEIGHT = mRadius * 3;
         mBezPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -107,6 +95,11 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
         matrix_bounceL.preScale(-1, 1);
     }
 
+    private int time_animator = 600;  //动画时间
+    private Matrix matrix_bounceL;   //将向右弹的动画改为向左
+    private int color_bez = 0xfffe626d;
+    private int color_touch = 0xfffe626d;
+    private int color_stroke = Color.GRAY;
     private int DEFAULT_WIDTH;
     private int DEFAULT_HEIGHT;
     private int default_round_count = 4;   //默认圆球的数量
@@ -503,14 +496,7 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
             nextPos = position - 1;
         }
 
-
-//        Log.w(TAG, "onPageScrolled animatedValue==" + animatedValue);
-//        Log.w(TAG, "onPageScrolled direction==" + direction);
-//        Log.w(TAG, "onPageScrolled curPos==" + curPos);
-//        Log.w(TAG, "onPageScrolled nextPos==" + nextPos);
-//        Log.w(TAG, "onPageScrolled position==" + position);
-
-        invalidate();
+        postInvalidate();
     }
 
     @Override
@@ -519,49 +505,5 @@ public class PhotoPointView extends View implements ViewPager.OnPageChangeListen
 
     @Override
     public void onPageScrollStateChanged(int state) {
-    }
-
-    public void setAnimDuration(int time) {
-        time_animator = time;
-    }
-
-    /**
-     * 设置圆的半径
-     */
-    public void setRadius(int radius) {
-        this.mRadius = radius;
-        init();
-    }
-
-    /**
-     * 设置bez 圆的数量，默认4个
-     */
-    public void setRoundCount(int count) {
-        this.default_round_count = count;
-        initCountPos();
-    }
-
-    /**
-     * 设置bez 圆的颜色，默认粉红色
-     */
-    public void setBezRoundColor(int roundcolor) {
-        color_bez = roundcolor;
-        mBezPaint.setColor(roundcolor);
-    }
-
-    /**
-     * 触摸效果颜色，默认粉红色
-     */
-    public void setTouchColor(int touchColor) {
-        color_touch = touchColor;
-        mTouchPaint.setColor(touchColor);
-    }
-
-    /**
-     * 圆框的颜色
-     */
-    public void setStrokeColor(int strokeColor) {
-        color_stroke = strokeColor;
-        mRoundStrokePaint.setColor(strokeColor);
     }
 }

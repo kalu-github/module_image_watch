@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="BezierRoundView">
-        <attr name="color_bez" format="color" />
-        <attr name="color_touch" format="color" />
-        <attr name="color_stroke" format="color" />
-        <attr name="time_animator" format="integer" />
-        <attr name="round_count" format="integer" />
-        <attr name="radius2" format="dimension" />
+    <declare-styleable name="PhotoPointView">
+        <attr name="ppv_color_bez" format="color" />
+        <attr name="ppv_color_touch" format="color" />
+        <attr name="ppv_color_stroke" format="color" />
+        <attr name="ppv_time_animator" format="integer" />
+        <attr name="ppv_round_count" format="integer" />
+        <attr name="ppv_radius2" format="dimension" />
     </declare-styleable>
 
     <!--圆角图片的属性-->
