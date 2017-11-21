@@ -4,12 +4,13 @@
     <declare-styleable name="PhotoPointView">
         <!-- 指示点触摸反馈动画 -->
         <attr name="ppv_enable_touch" format="boolean" />
+        <!-- 指示点半径 -->
+        <attr name="ppv_point_radius" format="dimension|reference" />
         <attr name="ppv_color_bez" format="color" />
         <attr name="ppv_color_touch" format="color" />
         <attr name="ppv_color_stroke" format="color" />
         <attr name="ppv_time_animator" format="integer" />
         <attr name="ppv_round_count" format="integer" />
-        <attr name="ppv_radius2" format="dimension" />
     </declare-styleable>
 
     <!--圆角图片的属性-->
