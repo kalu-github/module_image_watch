@@ -1,3 +1,5 @@
+[戳我下载, 体验DEMO](https://pan.baidu.com/s/1pLgJGdP)
+
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-21-21-40-47-458_20171121214225.gif ) 
 
 ```
