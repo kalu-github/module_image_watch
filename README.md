@@ -1,10 +1,9 @@
+[戳我下载 ==>](https://pan.baidu.com/s/1pLgJGdP)
+
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-21-21-40-47-458_20171121214225.gif ) 
-![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-05.gif ) 
 
 ```
-简书地址：
-
-http://www.jianshu.com/p/36931e1d3c84
+解决问题：
 
 1.替换window实现方式
 2.自动释放资源文件，不需要关心生命周期资源释放的类似问题
