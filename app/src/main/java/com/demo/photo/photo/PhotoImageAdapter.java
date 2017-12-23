@@ -13,7 +13,7 @@ import com.demo.photo.util.GlideUtil;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-class PhotoImageAdapter extends PagerAdapter {
+final class PhotoImageAdapter extends PagerAdapter {
 
     private Activity mActivity;
     private PhotoLayout mPhotoLayout;
@@ -49,8 +49,8 @@ class PhotoImageAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
 
-        Context applicationContext = APP.getInstance().getApplicationContext();
-        final PhotoSubView newImage = new PhotoSubView(applicationContext);
+        Context applicationContext = container.getContext().getApplicationContext();
+        final PhotoImageView newImage = new PhotoImageView(applicationContext);
         newImage.setImageUrl(mPhotoLayoutAttr.getImageLittleUrlList().get(position));
         newImage.setImaageLongPressSave(mPhotoLayoutAttr.isImaageLongPressSave());
         newImage.setPhotoImageLayout(mPhotoLayout);

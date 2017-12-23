@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,7 +32,7 @@ import java.util.List;
  * description 大图加载
  * created by kalu on 2016/10/23 13:11
  */
-public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeListener {
+public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeListener {
 
     private PhotoLayoutAttr attr;
 
@@ -42,12 +43,22 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private PhotoDialog mPhotoDialog;
     private Activity mActivity;
 
+    private final PhotoLoadView load;
+
     private PhotoLayout(Activity activity, final PhotoLayoutAttr attr) {
         super(activity.getApplicationContext());
+      //  setBackgroundColor(Color.GREEN);
 
         setBackgroundColor(attr.getImageBackgroundColor());
         this.attr = attr;
         this.mActivity = activity;
+
+        // 加载进度条
+        load = new PhotoLoadView(getContext().getApplicationContext());
+        FrameLayout.LayoutParams params1 = new FrameLayout.LayoutParams(100, 100);
+        params1.gravity = Gravity.CENTER;
+        load.setLayoutParams(params1);
+        addView(load);
 
         // 1.3 创建对象
         int imageDrawableIntrinsicWidth = attr.getDefaultImageDrawableIntrinsicWidth();
@@ -56,7 +67,7 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         int imageY = attr.getDefaultImageY();
 
         boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        ImageView tempImage = new ImageView(getContext());
+        ImageView tempImage = new ImageView(getContext().getApplicationContext());
 
         tempImage.setVisibility(openImageTransAnim ? View.VISIBLE : View.INVISIBLE);
         addView(tempImage);
@@ -66,18 +77,7 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         params.topMargin = imageY;
         // 1.2 位置参数
         tempImage.setLayoutParams(params);
-        GlideUtil.loadImageOriginal(activity, tempImage, attr.getImageOriginalUrl(), null);
-
-        Log.e("ka22lu--11", "imageUrl = " + attr.getImageOriginalUrl());
-
-        Log.e("ka22lu--11", "imageWidth = " + imageDrawableIntrinsicWidth + ", imageX = " + imageX);
-        Log.e("ka22lu--11", "imageHeight = " + imageDrawableIntrinsicHeight + ", imageY = " + imageY);
-
-        int imageWidth = tempImage.getWidth();
-        int imageHeight = tempImage.getHeight();
-
-        Log.e("ka22lu--22", "imageWidth = " + imageWidth + ", imageX = " + tempImage.getX());
-        Log.e("ka22lu--22", "imageHeight = " + imageHeight + ", imageY = " + tempImage.getY());
+        GlideUtil.loadImageSimple(activity, tempImage, attr.getImageOriginalUrl(), null);
 
         // 2.初始化ViewPager
         viewPager = new ViewPager(activity.getApplicationContext());
@@ -108,10 +108,10 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
             @Override
             public void onBackPressed() {
 
-                if (!isPressedBack) {
+                if (isPressedBack) return;
+                    setBackgroundColor(Color.TRANSPARENT);
                     animDismiss();
                     isPressedBack = true;
-                }
             }
         });
 
@@ -247,8 +247,7 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     @Override
     public void onPageSelected(final int position) {
 
-        final PhotoSubView image = (PhotoSubView) viewPager.getChildAt(position);
-
+        final ImageView image = (ImageView) viewPager.getChildAt(position);
         Object tag = image.getTag(image.getId());
 
         final String bigUrl = attr.getImageUrlList().get(position);
@@ -271,7 +270,8 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
                 @Override
                 public void onLoadChange(String imageUrl, long loadSize, long totalSize, long percent) {
 
-                    image.setLoadProgress(percent);
+                    if(null == load) return;
+                    load.setLoadProgress(percent);
                 }
             });
         }
@@ -295,6 +295,13 @@ public class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeLi
             mPhotoDialog.cancel();
             mPhotoDialog.dismiss();
         }
+    }
+
+    protected void onDrag(float deltaX, float deltaY) {
+
+        if (null == mPhotoDialog) return;
+
+        setBackgroundColor(Color.TRANSPARENT);
     }
 
     /**********************************************************************************************/

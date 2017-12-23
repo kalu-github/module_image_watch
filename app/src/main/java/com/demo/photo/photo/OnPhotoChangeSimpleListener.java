@@ -1,6 +1,6 @@
 package com.demo.photo.photo;
 
-public class OnPhotoChangeSimpleListener implements OnPhotoChangeListener {
+public final class OnPhotoChangeSimpleListener implements OnPhotoChangeListener {
 
     @Override
     public void onLongPress(int position, String imageUrl) {

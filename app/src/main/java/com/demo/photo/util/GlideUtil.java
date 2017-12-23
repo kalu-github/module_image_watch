@@ -61,7 +61,7 @@ public class GlideUtil {
     // DiskCacheStrategy.RESULT  只缓存最终加载的图（默认的缓存策略）
     // DiskCacheStrategy.ALL  同时缓存原图和结果图
     private static final RequestOptions options = new RequestOptions()
-            .centerInside()
+            .centerCrop()
             .priority(Priority.HIGH)
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
 
@@ -69,28 +69,35 @@ public class GlideUtil {
 //        String style = "!app_boot1";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("");
-        loadImage(activity, null, imageView, url, stringBuilder, 0, 0, 0, false, false, null);
+        loadImage(activity, null, imageView, url, stringBuilder, ImageView.ScaleType.CENTER_CROP, 0, 0, 0, false, null);
     }
 
     public static void loadImageSimple(Fragment fragment, ImageView imageView, String url, OnGlideLoadChangeListener listener) {
 //        String style = "!app_boot1";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("");
-        loadImage(null, fragment, imageView, url, stringBuilder, 0, 0, 0, false, false, listener);
+        loadImage(null, fragment, imageView, url, stringBuilder, ImageView.ScaleType.CENTER_CROP, 0, 0, 0, false, listener);
+    }
+
+    public static void loadImageSimple(Activity activity, ImageView imageView, String url, OnGlideLoadChangeListener listener) {
+//        String style = "!app_boot1";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("");
+        loadImage(activity, null, imageView, url, stringBuilder, ImageView.ScaleType.CENTER_CROP, 0, 0, 0, false, listener);
     }
 
     public static void loadImageOriginal(Activity activity, ImageView imageView, String url, OnGlideLoadChangeListener listener) {
 //        String style = "!app_boot1";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("");
-        loadImage(activity, null, imageView, url, stringBuilder, 0, 0, 0, false, true, listener);
+        loadImage(activity, null, imageView, url, stringBuilder, ImageView.ScaleType.CENTER_INSIDE, 0, 0, 0, false, listener);
     }
 
     public static void loadImageOriginal(Fragment fragment, ImageView imageView, String url, OnGlideLoadChangeListener listener) {
 //        String style = "!app_boot1";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("");
-        loadImage(null, fragment, imageView, url, stringBuilder, 0, 0, 0, false, true, listener);
+        loadImage(null, fragment, imageView, url, stringBuilder, ImageView.ScaleType.CENTER_INSIDE, 0, 0, 0, false, listener);
     }
 
     /**
@@ -102,7 +109,20 @@ public class GlideUtil {
      * @param isCircle     圆形图片处理
      * @param listener     图片下载进度监听
      */
-    private static void loadImage(Activity activity, Fragment fragment, final ImageView imageView, String url, CharSequence style, int defaultImage, int errorImage, int blurRadiu, boolean isCircle, boolean isOriginal, final OnGlideLoadChangeListener listener) {
+    /**
+     * @param activity
+     * @param fragment
+     * @param imageView
+     * @param url
+     * @param style
+     * @param defaultImage 默认占位图
+     * @param errorImage
+     * @param blurRadiu    模糊
+     * @param isCircle     圆形图片处理
+     * @param scaleType    scaletype,
+     * @param listener     图片下载进度监听
+     */
+    private static void loadImage(Activity activity, Fragment fragment, final ImageView imageView, String url, CharSequence style, ImageView.ScaleType scaleType, int defaultImage, int errorImage, int blurRadiu, boolean isCircle, final OnGlideLoadChangeListener listener) {
 
         if (null == activity && null == fragment) return;
 
@@ -148,8 +168,7 @@ public class GlideUtil {
             }
 
             // 需要显示加载过程, 不能是GIF图片
-            if (isOriginal && !url.toLowerCase().endsWith(GIF)) {
-
+            if (scaleType == ImageView.ScaleType.CENTER_INSIDE && !url.toLowerCase().endsWith(GIF)) {
                 requestManager.asDrawable().load(url).apply(options).into(new SimpleTarget<Drawable>() {
                     @Override
                     public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {

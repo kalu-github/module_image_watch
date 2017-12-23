@@ -9,7 +9,7 @@ import java.util.List;
  * description: 当前类描述信息
  * created by kalu on 2012017/11/4:20:57
  **/
-class PhotoLayoutAttr {
+final class PhotoLayoutAttr {
 
     // 每一个图片位置信息
     static class PhotoImageInfo{

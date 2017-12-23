@@ -2,6 +2,8 @@ package com.demo.photo.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.WindowManager;
 
@@ -14,13 +16,20 @@ import com.demo.photo.R;
 public class PhotoDialog extends Dialog {
 
     public PhotoDialog(Activity baseActivity) {
-        super(baseActivity, R.style.photo_dialog);
+        super(baseActivity);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override

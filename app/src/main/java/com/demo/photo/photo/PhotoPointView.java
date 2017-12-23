@@ -24,7 +24,7 @@ import com.demo.photo.R;
  * description: 指示器
  * created by kalu on 17-10-15 上午5:28
  */
-class PhotoPointView extends View implements ViewPager.OnPageChangeListener {
+final class PhotoPointView extends View implements ViewPager.OnPageChangeListener {
 
     // 默认指示点半径
     private float mRadius;
