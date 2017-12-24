@@ -25,8 +25,3 @@ new PhotoLayout.Builder(MainActivity.this)
                         .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
                         .show();
 ```
-```
-todo:
-
-1.添加手势，下滑渐渐退出
-```
