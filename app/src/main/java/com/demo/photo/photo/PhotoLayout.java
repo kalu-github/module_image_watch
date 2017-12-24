@@ -202,6 +202,10 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             viewPager.setVisibility(View.INVISIBLE);
         }
 
+        if (null != mPhotoPointView) {
+            mPhotoPointView.setVisibility(View.INVISIBLE);
+        }
+
         final int position = viewPager.getCurrentItem();
         if (null != mImagePlaceholder) {
             final PhotoImageView image = (PhotoImageView) viewPager.getChildAt(position);
