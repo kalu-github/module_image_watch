@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.demo.photo.util.LogUtil;
+
 /**
  * Created by kalu on 2017/12/23.
  */
@@ -81,7 +83,7 @@ public class PhotoLoadView extends View {
     public void setLoadProgress(long progress) {
 
         sweepAngle = progress * 360 / 100;
-        // LogUtil.e("kalu", "sweepAngle = " + sweepAngle + "progress = " + progress);
+        LogUtil.e("kalu", "sweepAngle = " + sweepAngle + "progress = " + progress);
 
         if (Looper.getMainLooper() == Looper.myLooper()) {
             invalidate();

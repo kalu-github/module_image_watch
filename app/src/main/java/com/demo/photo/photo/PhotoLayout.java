@@ -44,10 +44,11 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     private Activity mActivity;
 
     private final PhotoLoadView load;
+    private final ImageView mImagePlaceholder;
 
     private PhotoLayout(Activity activity, final PhotoLayoutAttr attr) {
         super(activity.getApplicationContext());
-      //  setBackgroundColor(Color.GREEN);
+        //  setBackgroundColor(Color.GREEN);
 
         setBackgroundColor(attr.getImageBackgroundColor());
         this.attr = attr;
@@ -67,17 +68,16 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         int imageY = attr.getDefaultImageY();
 
         boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        ImageView tempImage = new ImageView(getContext().getApplicationContext());
-
-        tempImage.setVisibility(openImageTransAnim ? View.VISIBLE : View.INVISIBLE);
-        addView(tempImage);
+        mImagePlaceholder = new ImageView(getContext().getApplicationContext());
+        mImagePlaceholder.setVisibility(openImageTransAnim ? View.VISIBLE : View.INVISIBLE);
+        addView(mImagePlaceholder);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(imageDrawableIntrinsicWidth, imageDrawableIntrinsicHeight);
         params.gravity = Gravity.TOP | Gravity.LEFT;
         params.leftMargin = imageX;
         params.topMargin = imageY;
         // 1.2 位置参数
-        tempImage.setLayoutParams(params);
-        GlideUtil.loadImageSimple(activity, tempImage, attr.getImageOriginalUrl(), null);
+        mImagePlaceholder.setLayoutParams(params);
+        GlideUtil.loadImageSimple(activity, mImagePlaceholder, attr.getImageOriginalUrl(), null);
 
         // 2.初始化ViewPager
         viewPager = new ViewPager(activity.getApplicationContext());
@@ -109,14 +109,14 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             public void onBackPressed() {
 
                 if (isPressedBack) return;
-                    setBackgroundColor(Color.TRANSPARENT);
-                    animDismiss();
-                    isPressedBack = true;
+                setBackgroundColor(Color.TRANSPARENT);
+                animDismiss();
+                isPressedBack = true;
             }
         });
 
         // 4.开始动画
-        animStart(tempImage);
+        animStart(mImagePlaceholder);
     }
 
     /*******************************************************************************************/
@@ -124,32 +124,36 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     // 开始动画
     private void animStart(final ImageView animImage) {
 
-        Context context = getContext().getApplicationContext();
+        if (null != viewPager) {
+            viewPager.setEnabled(true);
+        }
 
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int widthPixels = displayMetrics.widthPixels;
-        int heightPixels = displayMetrics.heightPixels;
+        final Context context = getContext().getApplicationContext();
 
-        int startTranX = attr.getDefaultImageX();
-        int endTranX = (widthPixels - attr.getDefaultImageDrawableIntrinsicWidth()) / 2;
+        final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        final int widthPixels = displayMetrics.widthPixels;
+        final int heightPixels = displayMetrics.heightPixels;
 
-        int startTranY = attr.getDefaultImageY();
-        int endTranY = (heightPixels - attr.getDefaultImageDrawableIntrinsicHeight()) / 2;
+        final int startTranX = attr.getDefaultImageX();
+        final int endTranX = (widthPixels - attr.getDefaultImageDrawableIntrinsicWidth()) / 2;
 
-        float endScaleVal = widthPixels * 1.f / attr.getDefaultImageDrawableIntrinsicWidth();
+        final int startTranY = attr.getDefaultImageY();
+        final int endTranY = (heightPixels - attr.getDefaultImageDrawableIntrinsicHeight()) / 2;
+
+        final float endScale = widthPixels * 1.f / attr.getDefaultImageDrawableIntrinsicWidth();
 
         // x 方向放大
-        ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(animImage, "scaleX", animImage.getScaleX(), endScaleVal);
+        final ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(animImage, "scaleX", 1, endScale);
         // y 方向放大
-        ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(animImage, "scaleY", animImage.getScaleY(), endScaleVal);
+        final ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(animImage, "scaleY", 1, endScale);
         // x 方向平移
-        ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(animImage, "x", startTranX, endTranX);
+        final ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(animImage, "x", startTranX, endTranX);
         // y 方向平移
-        ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(animImage, "y", startTranY, endTranY);
+        final ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(animImage, "y", startTranY, endTranY);
 
-        AnimatorSet animatorSet = new AnimatorSet();
+        final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
-        boolean openImageTransAnim = attr.isOpenImageTransAnim();
+        final boolean openImageTransAnim = attr.isOpenImageTransAnim();
         animatorSet.setDuration(openImageTransAnim ? 500 : 0);
         animatorSet.setStartDelay(100);
 
@@ -158,11 +162,11 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             @Override
             public void onAnimationEnd(Animator animation) {
 
-                animImage.setScaleX(1);
-                animImage.setScaleY(1);
-
                 // 1.删除模拟过渡动画
-                removeView(animImage);
+                if (null != mImagePlaceholder) {
+                    mImagePlaceholder.setVisibility(View.INVISIBLE);
+                }
+
                 // 2.显示轮播图
                 viewPager.setVisibility(View.VISIBLE);
                 if (null != mPhotoPointView) {
@@ -189,28 +193,38 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     // 结束动画
     void animDismiss() {
 
-        if (null != mPhotoPointView) {
-            mPhotoPointView.setVisibility(View.INVISIBLE);
+        if (null != viewPager) {
+            viewPager.setEnabled(false);
+            viewPager.setVisibility(View.INVISIBLE);
         }
 
-        int currentItem = viewPager.getCurrentItem();
+        if (null != mImagePlaceholder) {
+            mImagePlaceholder.setVisibility(View.VISIBLE);
+        }
 
-        float endScale = attr.getImageDrawableIntrinsicWidth(currentItem) * 1.f / getWidth();
-        float endScaleY = (attr.getImageDrawableIntrinsicHeight(currentItem) * 1.f / getHeight());
-        float endTranX = (getWidth() - (getWidth() * endScale)) * .5f - attr.getImageX(currentItem);
-        float endTranY = (getHeight() - (getHeight() * endScaleY)) * .5f - attr.getImageY(currentItem);
+        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        final int widthPixels = displayMetrics.widthPixels;
+        final int heightPixels = displayMetrics.heightPixels;
+
+        final int endX = attr.getDefaultImageX();
+        final int beginX = (widthPixels - attr.getDefaultImageDrawableIntrinsicWidth()) / 2;
+
+        final int endY = attr.getDefaultImageY();
+        final int beginY = (heightPixels - attr.getDefaultImageDrawableIntrinsicHeight()) / 2;
+
+        final float beginScale = widthPixels * 1.f / attr.getDefaultImageDrawableIntrinsicWidth();
 
         // x 方向缩小
-        ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(PhotoLayout.this, "scaleX", getScaleX(), endScale);
+        final ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "scaleX", beginScale, 1);
         // y 方向缩小
-        ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(PhotoLayout.this, "scaleY", getScaleY(), endScale);
+        final ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "scaleY", beginScale, 1);
         // x 方向平移
-        ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(PhotoLayout.this, "x", getTranslationX(), -endTranX);
+        final ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "x", beginX, endX);
         // y 方向平移
-        ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(PhotoLayout.this, "y", getTranslationY(), -endTranY);
+        final ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "y", beginY, endY);
 
-        AnimatorSet animatorSet = new AnimatorSet();
-        boolean openImageTransAnim = attr.isOpenImageTransAnim();
+        final AnimatorSet animatorSet = new AnimatorSet();
+        final boolean openImageTransAnim = attr.isOpenImageTransAnim();
         animatorSet.setDuration(openImageTransAnim ? 500 : 0);
         animatorSet.setStartDelay(openImageTransAnim ? 100 : 0);
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
@@ -270,7 +284,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
                 @Override
                 public void onLoadChange(String imageUrl, long loadSize, long totalSize, long percent) {
 
-                    if(null == load) return;
+                    if (null == load) return;
                     load.setLoadProgress(percent);
                 }
             });

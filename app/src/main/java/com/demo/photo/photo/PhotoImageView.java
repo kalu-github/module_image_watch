@@ -106,6 +106,8 @@ final class PhotoImageView extends AppCompatImageView {
 
     private PhotoLayout mPhotoLayout;
 
+    /**********************************************************************************************/
+
     public void setPhotoImageLayout(PhotoLayout mPhotoLayout) {
         this.mPhotoLayout = mPhotoLayout;
     }
@@ -126,6 +128,8 @@ final class PhotoImageView extends AppCompatImageView {
         setScaleType(ScaleType.MATRIX);
         setOnTouchListener(new TouchListener());
     }
+
+    /**********************************************************************************************/
 
     public void setMaxScale(float scale) {
         mMaxScale = scale;
@@ -181,9 +185,9 @@ final class PhotoImageView extends AppCompatImageView {
 
     @Override
     public void setImageBitmap(Bitmap bm) {
-        if (bm == null) {
-            return;
-        }
+
+        if (null == bm) return;
+
         bm = decodeByte(bmp2Byte(bm));
         super.setImageBitmap(bm);
         formatImageScaleType();

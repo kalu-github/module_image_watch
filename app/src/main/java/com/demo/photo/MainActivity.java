@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPhotoDefaultPosition(0)
                         .setPhotoDefaultResource(R.mipmap.ic_launcher)
                         .setPhotoViewList(image, image2, image3)
-                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
+                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .setPhotoLittleUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .show();
             }
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPhotoDefaultPosition(1)
                         .setPhotoDefaultResource(R.mipmap.ic_launcher)
                         .setPhotoViewList(image, image2, image3)
-                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
+                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .setPhotoLittleUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .show();
             }
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPhotoDefaultPosition(2)
                         .setPhotoDefaultResource(R.mipmap.ic_launcher)
                         .setPhotoViewList(image, image2, image3)
-                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://i2.download.fd.pchome.net/g1/M00/12/1E/ooYBAFb8ySeIEhaMABsXm3dLn7oAAC4ZAChMvkAGxez781.jpg")
+                        .setPhotoUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .setPhotoLittleUrlList("http://scimg.jb51.net/allimg/160905/2-160Z51P540H0.gif", "https://b-ssl.duitang.com/uploads/item/201511/18/20151118131629_RenHN.thumb.700_0.jpeg", "http://img-download.pchome.net/download/1k0/h1/4j/o4jbrz-fkz.jpg@0e_0o_1024w_768h_90q.src")
                         .show();
             }
