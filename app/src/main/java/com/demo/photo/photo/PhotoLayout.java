@@ -234,7 +234,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         final AnimatorSet animatorSet = new AnimatorSet();
         final boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        animatorSet.setDuration(openImageTransAnim ? 2000 : 0);
+        animatorSet.setDuration(openImageTransAnim ? 500 : 0);
         animatorSet.setStartDelay(openImageTransAnim ? 100 : 0);
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
 
