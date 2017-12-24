@@ -104,6 +104,10 @@ final class PhotoImageView extends AppCompatImageView {
         this.imageUrl = imageUrl;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     private PhotoLayout mPhotoLayout;
 
     /**********************************************************************************************/
