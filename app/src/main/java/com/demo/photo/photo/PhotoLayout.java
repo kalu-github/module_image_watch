@@ -118,7 +118,6 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             public void onBackPressed() {
 
                 if (isPressedBack) return;
-                setBackgroundColor(Color.TRANSPARENT);
                 animDismiss();
                 isPressedBack = true;
             }
@@ -196,6 +195,8 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
     // 结束动画
     void animDismiss() {
+
+        setBackgroundColor(Color.TRANSPARENT);
 
         if (null != viewPager) {
             viewPager.setEnabled(false);
