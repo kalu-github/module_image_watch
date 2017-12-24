@@ -15,13 +15,13 @@
 使用方法：
 
 new PhotoLayout.Builder(MainActivity.this)
-                        .setPhotoLongPressSave(true) //长按保存图片到图库
-                        .setPhotoOpenTransAnim(true) //渐变动画
-                        .setPhotoBackgroundColor(Color.BLACK) //背景颜色
-                        .setPhotoDefaultPosition(0) //默认索引位置
-                        .setPhotoDefaultResource(R.mipmap.ic_launcher)  //默认占位图
-                        .setPhotoList(image, image2, image3) //imageview集合
-                        .setPhotoUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
-                        .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
-                        .show();
+               .setPhotoLongPressSave(true) //长按保存图片到图库
+               .setPhotoOpenTransAnim(true) //渐变动画
+               .setPhotoBackgroundColor(Color.BLACK) //背景颜色
+               .setPhotoDefaultPosition(0) //默认索引位置
+               .setPhotoDefaultResource(R.mipmap.ic_launcher)  //默认占位图
+               .setPhotoList(image, image2, image3) //imageview集合
+               .setPhotoUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
+               .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
+               .show();
 ```
