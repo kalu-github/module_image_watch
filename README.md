@@ -1,6 +1,8 @@
 [戳我下载 ==>](https://pan.baidu.com/s/1pLgJGdP)
 
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-21-21-40-47-458_20171121214225.gif ) 
+![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-12-24-20-59-09-590_20171224205953.gif ) 
+![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-12-24-20-59-24-806_20171224205930.gif ) 
 
 ```
 解决问题：
