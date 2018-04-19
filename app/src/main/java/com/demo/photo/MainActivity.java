@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.demo.photo.photo.OnPhotoChangeSimpleListener;
 import com.demo.photo.photo.PhotoLayout;
 import com.demo.photo.util.GlideUtil;
 

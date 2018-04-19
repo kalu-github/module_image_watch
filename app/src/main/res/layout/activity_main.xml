@@ -15,8 +15,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/icon" />
+            android:padding="2dp" />
 
         <ImageView
             android:id="@+id/image2"
@@ -25,8 +24,7 @@
             android:layout_below="@id/image"
             android:layout_weight="1"
             android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/icon" />
+            android:padding="2dp" />
 
         <ImageView
             android:id="@+id/image3"
@@ -35,8 +33,7 @@
             android:layout_below="@id/image2"
             android:layout_weight="1"
             android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/icon" />
+            android:padding="2dp" />
 
     </LinearLayout>
 
