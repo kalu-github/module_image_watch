@@ -1,4 +1,4 @@
-[戳我下载 ==>](https://pan.baidu.com/s/1pLgJGdP)
+[戳我下载 ==>](https://pan.baidu.com/s/1jHSbTx8)
 
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-11-21-21-40-47-458_20171121214225.gif ) 
 ![image](https://github.com/153437803/PhotoView/blob/master/Screenrecorder-2017-12-24-20-59-09-590_20171224205953.gif ) 
@@ -15,18 +15,13 @@
 使用方法：
 
 new PhotoLayout.Builder(MainActivity.this)
-                        .setPhotoLongPressSave(true) //长按保存图片到图库
-                        .setPhotoOpenTransAnim(true) //渐变动画
-                        .setPhotoBackgroundColor(Color.BLACK) //背景颜色
-                        .setPhotoDefaultPosition(0) //默认索引位置
-                        .setPhotoDefaultResource(R.mipmap.ic_launcher)  //默认占位图
-                        .setPhotoList(image, image2, image3) //imageview集合
-                        .setPhotoUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
-                        .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
-                        .show();
-```
-```
-todo:
-
-1.添加手势，下滑渐渐退出
+               .setPhotoLongPressSave(true) //长按保存图片到图库
+               .setPhotoOpenTransAnim(true) //渐变动画
+               .setPhotoBackgroundColor(Color.BLACK) //背景颜色
+               .setPhotoDefaultPosition(0) //默认索引位置
+               .setPhotoDefaultResource(R.mipmap.ic_launcher)  //默认占位图
+               .setPhotoList(image, image2, image3) //imageview集合
+               .setPhotoUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //大图集合
+               .setPhotoLittleUrlList("http://*.jpg", "http://*.jpg", "http://*.jpg") //小图集合
+               .show();
 ```
