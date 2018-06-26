@@ -1,55 +1,31 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "com.demo.photo"
         minSdkVersion 15
         targetSdkVersion 15
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        debug {
-            signingConfig signingConfigs.debug
-            ext.alwaysUpdateBuildId = false  // 编译加速
-            buildConfigField "long", "BUILD_TIMESTAMP", "000000000"  // 编译加速
-        }
     }
-
-    if (project.hasProperty("devBuild")) {  // 编译加速
-        aaptOptions.cruncherEnabled = false  // 编译加速
-    }
-
-    dexOptions {          // 编译加速
-        incremental true  // 编译加速
-    }
-
-    flavorDimensions "default"  // 编译加速
-    productFlavors {  // 编译加速
-        development {  // 编译加速
-            minSdkVersion 21  // 编译加速
-            dimension "default"  // 编译加速
-            resConfigs("en", "xxhdpi")  // 编译加速
-        }
-        production {  // 编译加速
-            dimension "default"  // 编译加速
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.+'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     // 图片
-    implementation 'com.github.bumptech.glide:glide:4.2.0'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:4.2.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     // 网络层
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'

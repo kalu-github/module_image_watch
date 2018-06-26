@@ -11,13 +11,13 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
-
-import com.demo.photo.util.LogUtil;
 
 /**
  * description: 旋转, 缩放, 平移
@@ -25,6 +25,9 @@ import com.demo.photo.util.LogUtil;
  */
 final class PhotoView extends AppCompatImageView {
 
+    /*************************************************************************/
+
+    private static final int MAX_DEGREES_STEP = 120;
     // 平移, 动画时长
     private final int ANIM_OTHER = 340;
     // 旋转, 动画时长
@@ -35,15 +38,12 @@ final class PhotoView extends AppCompatImageView {
     private final float SCALE_MIN = 1f;
     // 缩放, 当前倍数
     private float mScaleMultiple = 1f;
-
     private int MAX_FLING_OVER_SCROLL = (int) (getResources().getDisplayMetrics().density * 30);
     private int MAX_OVER_RESISTANCE = (int) (getResources().getDisplayMetrics().density * 140);
-
     private Matrix mBaseMatrix = new Matrix();
     private Matrix mAnimaMatrix = new Matrix();
     private Matrix mSynthesisMatrix = new Matrix();
     private Matrix mTmpMatrix = new Matrix();
-
     private boolean hasMultiTouch;
     private boolean hasDrawable;
     private boolean isKnowSize;
@@ -52,121 +52,31 @@ final class PhotoView extends AppCompatImageView {
     // 当前是否处于放大状态
     private boolean isZoonUp;
     private boolean canRotate;
-
     private boolean imgLargeWidth;
     private boolean imgLargeHeight;
-
     private float mRotateFlag;
-    private float mRoateAngle;
+    private int mRoateAngle;  // 旋转角度
     private int mTranslateX;
     private int mTranslateY;
-
     private float mHalfBaseRectWidth;
     private float mHalfBaseRectHeight;
-
     private RectF mWidgetRect = new RectF();
     private RectF mBaseRect = new RectF();
     private RectF mImgRect = new RectF();
     private RectF mTmpRect = new RectF();
     private RectF mCommonRect = new RectF();
-
     private PointF mScreenCenter = new PointF();
     private PointF mScaleCenter = new PointF();
     private PointF mRotateCenter = new PointF();
-
     private Transform mTranslate = new Transform();
-
     private RectF mClip;
     private Runnable mCompleteCallBack;
-
-    /**************************************************************************/
-
-    public PhotoView(Context context) {
-        super(context);
-        setScaleType(ScaleType.MATRIX);
-    }
-
-    public PhotoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setScaleType(ScaleType.MATRIX);
-    }
-
-    public PhotoView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        setScaleType(ScaleType.MATRIX);
-    }
-
-    /*************************************************************************/
-
-    private static final int MAX_DEGREES_STEP = 120;
-
     private float mPrevSlope;
     private float mCurrSlope;
-
     private float x1;
     private float y1;
     private float x2;
     private float y2;
-
-    private float caculateSlope(MotionEvent event) {
-        x1 = event.getX(0);
-        y1 = event.getY(0);
-        x2 = event.getX(1);
-        y2 = event.getY(1);
-        return (y2 - y1) / (x2 - x1);
-    }
-
-
-    /*************************************************************************/
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        final int Action = event.getActionMasked();
-        if (event.getPointerCount() >= 2) hasMultiTouch = true;
-
-        mGestureDetector.onTouchEvent(event);
-
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-            case MotionEvent.ACTION_POINTER_UP:
-                if (event.getPointerCount() == 2) mPrevSlope = caculateSlope(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (event.getPointerCount() > 1) {
-                    mCurrSlope = caculateSlope(event);
-
-                    double currDegrees = Math.toDegrees(Math.atan(mCurrSlope));
-                    double prevDegrees = Math.toDegrees(Math.atan(mPrevSlope));
-
-                    double deltaSlope = currDegrees - prevDegrees;
-
-                    if (Math.abs(deltaSlope) <= MAX_DEGREES_STEP) {
-
-                        float focusX = (x2 + x1) / 2;
-                        float focusY = (y2 + y1) / 2;
-
-                        mRotateFlag += (float) deltaSlope;
-                        if (canRotate) {
-                            mRoateAngle += (float) deltaSlope;
-                            mAnimaMatrix.postRotate((float) deltaSlope, focusX, focusY);
-                        } else {
-                            if (Math.abs(mRotateFlag) >= ANIM_ROTATE) {
-                                canRotate = true;
-                                mRotateFlag = 0;
-                            }
-                        }
-                    }
-                    mPrevSlope = mCurrSlope;
-                }
-                break;
-        }
-
-        mScaleGestureDetector.onTouchEvent(event);
-
-        if (Action == MotionEvent.ACTION_UP || Action == MotionEvent.ACTION_CANCEL) onUp();
-        return true;
-    }
-
     private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -181,7 +91,9 @@ final class PhotoView extends AppCompatImageView {
             return true;
         }
     });
+    /*****************************************************************/
 
+    private OnPhotoChangeListener mListener;
     private final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
 
         @Override
@@ -214,7 +126,8 @@ final class PhotoView extends AppCompatImageView {
             }
 
             if (canRotate || mRoateAngle % 90 != 0) {
-                float toDegrees = (int) (mRoateAngle / 90) * 90;
+
+                int toDegrees = (mRoateAngle / 90) * 90;
                 float remainder = mRoateAngle % 90;
 
                 if (remainder > 45)
@@ -222,11 +135,11 @@ final class PhotoView extends AppCompatImageView {
                 else if (remainder < -45)
                     toDegrees -= 90;
 
-                mTranslate.withRotate((int) mRoateAngle, (int) toDegrees);
+                mTranslate.withRotate(mRoateAngle, toDegrees);
 
                 mRoateAngle = toDegrees;
 
-                LogUtil.e("zhangh", "onRotate22 ==> mRoateAngle = " + mRoateAngle);
+                //LogUtil.e("zhangh", "onRotate22 ==> mRoateAngle = " + mRoateAngle);
                 if (null != mListener) {
                     mListener.onRotate(mRoateAngle, 0, 0);
                 }
@@ -343,8 +256,97 @@ final class PhotoView extends AppCompatImageView {
 
     /**************************************************************************/
 
+    public PhotoView(Context context) {
+        super(context);
+        setScaleType(ImageView.ScaleType.MATRIX);
+    }
+
+    public PhotoView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        setScaleType(ImageView.ScaleType.MATRIX);
+    }
+
+    public PhotoView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        setScaleType(ImageView.ScaleType.MATRIX);
+    }
+
+    private static int getDrawableWidth(Drawable d) {
+        int width = d.getIntrinsicWidth();
+        if (width <= 0) width = d.getMinimumWidth();
+        if (width <= 0) width = d.getBounds().width();
+        return width;
+    }
+
+    private static int getDrawableHeight(Drawable d) {
+        int height = d.getIntrinsicHeight();
+        if (height <= 0) height = d.getMinimumHeight();
+        if (height <= 0) height = d.getBounds().height();
+        return height;
+    }
+
+    private float caculateSlope(MotionEvent event) {
+        x1 = event.getX(0);
+        y1 = event.getY(0);
+        x2 = event.getX(1);
+        y2 = event.getY(1);
+        return (y2 - y1) / (x2 - x1);
+    }
+
+    /*************************************************************************/
+
     @Override
-    public void setScaleType(ScaleType scaleType) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        final int Action = event.getActionMasked();
+        if (event.getPointerCount() >= 2) hasMultiTouch = true;
+
+        mGestureDetector.onTouchEvent(event);
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_POINTER_UP:
+                if (event.getPointerCount() == 2) mPrevSlope = caculateSlope(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (event.getPointerCount() > 1) {
+                    mCurrSlope = caculateSlope(event);
+
+                    double currDegrees = Math.toDegrees(Math.atan(mCurrSlope));
+                    double prevDegrees = Math.toDegrees(Math.atan(mPrevSlope));
+
+                    double deltaSlope = currDegrees - prevDegrees;
+
+                    if (Math.abs(deltaSlope) <= MAX_DEGREES_STEP) {
+
+                        float focusX = (x2 + x1) / 2;
+                        float focusY = (y2 + y1) / 2;
+
+                        mRotateFlag += (float) deltaSlope;
+                        if (canRotate) {
+                            mRoateAngle += (float) deltaSlope;
+                            mAnimaMatrix.postRotate((float) deltaSlope, focusX, focusY);
+                        } else {
+                            if (Math.abs(mRotateFlag) >= ANIM_ROTATE) {
+                                canRotate = true;
+                                mRotateFlag = 0;
+                            }
+                        }
+                    }
+                    mPrevSlope = mCurrSlope;
+                }
+                break;
+        }
+
+        mScaleGestureDetector.onTouchEvent(event);
+
+        if (Action == MotionEvent.ACTION_UP || Action == MotionEvent.ACTION_CANCEL) onUp();
+        return true;
+    }
+
+    /**************************************************************************/
+
+    @Override
+    public void setScaleType(ImageView.ScaleType scaleType) {
         //  LogUtil.e("tyu", "setScaleType ==>");
         super.setScaleType(scaleType);
         initBase();
@@ -389,13 +391,13 @@ final class PhotoView extends AppCompatImageView {
         int drawableW = getDrawableWidth(d);
         int drawableH = getDrawableHeight(d);
 
-        int pWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int pHeight = MeasureSpec.getSize(heightMeasureSpec);
+        int pWidth = View.MeasureSpec.getSize(widthMeasureSpec);
+        int pHeight = View.MeasureSpec.getSize(heightMeasureSpec);
 
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
 
-        int width ,height;
+        int width, height;
         ViewGroup.LayoutParams p = getLayoutParams();
 
         if (p == null) {
@@ -403,15 +405,15 @@ final class PhotoView extends AppCompatImageView {
         }
 
         if (p.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            if (widthMode == MeasureSpec.UNSPECIFIED) {
+            if (widthMode == View.MeasureSpec.UNSPECIFIED) {
                 width = drawableW;
             } else {
                 width = pWidth;
             }
         } else {
-            if (widthMode == MeasureSpec.EXACTLY) {
+            if (widthMode == View.MeasureSpec.EXACTLY) {
                 width = pWidth;
-            } else if (widthMode == MeasureSpec.AT_MOST) {
+            } else if (widthMode == View.MeasureSpec.AT_MOST) {
                 width = drawableW > pWidth ? pWidth : drawableW;
             } else {
                 width = drawableW;
@@ -419,15 +421,15 @@ final class PhotoView extends AppCompatImageView {
         }
 
         if (p.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-            if (heightMode == MeasureSpec.UNSPECIFIED) {
+            if (heightMode == View.MeasureSpec.UNSPECIFIED) {
                 height = drawableH;
             } else {
                 height = pHeight;
             }
         } else {
-            if (heightMode == MeasureSpec.EXACTLY) {
+            if (heightMode == View.MeasureSpec.EXACTLY) {
                 height = pHeight;
-            } else if (heightMode == MeasureSpec.AT_MOST) {
+            } else if (heightMode == View.MeasureSpec.AT_MOST) {
                 height = drawableH > pHeight ? pHeight : drawableH;
             } else {
                 height = drawableH;
@@ -477,20 +479,6 @@ final class PhotoView extends AppCompatImageView {
             return false;
         }
         return true;
-    }
-
-    private static int getDrawableWidth(Drawable d) {
-        int width = d.getIntrinsicWidth();
-        if (width <= 0) width = d.getMinimumWidth();
-        if (width <= 0) width = d.getBounds().width();
-        return width;
-    }
-
-    private static int getDrawableHeight(Drawable d) {
-        int height = d.getIntrinsicHeight();
-        if (height <= 0) height = d.getMinimumHeight();
-        if (height <= 0) height = d.getBounds().height();
-        return height;
     }
 
     private void initBase() {
@@ -696,17 +684,17 @@ final class PhotoView extends AppCompatImageView {
         if (mTranslate.isRuning) return;
 
         if (canRotate || mRoateAngle % 90 != 0) {
-            float toDegrees = (int) (mRoateAngle / 90) * 90;
-            float remainder = mRoateAngle % 90;
+            int toDegrees = (mRoateAngle / 90) * 90;
+            int remainder = mRoateAngle % 90;
 
             if (remainder > 45)
                 toDegrees += 90;
             else if (remainder < -45)
                 toDegrees -= 90;
 
-            mTranslate.withRotate((int) mRoateAngle, (int) toDegrees);
+            mTranslate.withRotate(mRoateAngle, toDegrees);
             mRoateAngle = toDegrees;
-            LogUtil.e("zhangh", "onRotate22 ==> mRoateAngle = " + mRoateAngle);
+            //  LogUtil.e("zhangh", "onRotate22 ==> mRoateAngle = " + mRoateAngle);
             if (null != mListener) {
                 mListener.onRotate(mRoateAngle, 0, 0);
             }
@@ -780,30 +768,6 @@ final class PhotoView extends AppCompatImageView {
         return Math.abs(Math.round(rect.left) - (mWidgetRect.width() - rect.width()) / 2) < 1;
     }
 
-    private ScaleGestureDetector.OnScaleGestureListener mScaleListener = new ScaleGestureDetector.OnScaleGestureListener() {
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            float scaleFactor = detector.getScaleFactor();
-
-            if (Float.isNaN(scaleFactor) || Float.isInfinite(scaleFactor))
-                return false;
-
-            mScaleMultiple *= scaleFactor;
-//            mScaleCenter.set(detector.getFocusX(), detector.getFocusY());
-            mAnimaMatrix.postScale(scaleFactor, scaleFactor, detector.getFocusX(), detector.getFocusY());
-            executeTranslate();
-            return true;
-        }
-
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            return true;
-        }
-
-        public void onScaleEnd(ScaleGestureDetector detector) {
-
-        }
-    };
-
     private float resistanceScrollByX(float overScroll, float detalX) {
         float s = detalX * (Math.abs(Math.abs(overScroll) - MAX_OVER_RESISTANCE) / (float) MAX_OVER_RESISTANCE);
         return s;
@@ -874,6 +838,14 @@ final class PhotoView extends AppCompatImageView {
     public boolean canScrollVertically(int direction) {
         if (hasMultiTouch) return true;
         return canScrollVerticallySelf(direction);
+    }
+
+    public void setOnPhotoChangeListener(OnPhotoChangeListener listener) {
+        mListener = listener;
+    }
+
+    public interface ClipCalculate {
+        float calculateTop();
     }
 
     private class InterpolatorProxy implements Interpolator {
@@ -1112,25 +1084,31 @@ final class PhotoView extends AppCompatImageView {
         }
     }
 
-    public interface ClipCalculate {
-        float calculateTop();
+    /******************************************************/
+
+    /**
+     * 旋转图片
+     *
+     * @param clockwise 顺时针方向
+     */
+    public final void rotateImage(boolean clockwise) {
+
+        if (null == mTranslate || mTranslate.isRuning) return;
+        final int degreesBegin = mRoateAngle;
+        mRoateAngle += (clockwise ? 90 : -90);
+        mTranslate.withRotate(degreesBegin, mRoateAngle);
+        mTranslate.start();
+
+        if (null != mListener) {
+            mListener.onRotate(mRoateAngle, 0, 0);
+        }
     }
 
-    /*****************************************************************/
-
-    private String imageurl = "";
-
-    public void setImageUrl(String imageurl) {
-        this.imageurl = imageurl;
-    }
-
-    public String getImageUrl() {
-        return imageurl;
-    }
-
-    private OnPhotoChangeListener mListener;
-
-    public void setOnPhotoChangeListener(OnPhotoChangeListener listener) {
-        mListener = listener;
-    }
+//    public Bitmap getBitmapCache() {
+//        final Bitmap bitmap;
+//        setDrawingCacheEnabled(true);
+//        bitmap = getDrawingCache();
+//        setDrawingCacheEnabled(false);
+//        return bitmap;
+//    }
 }

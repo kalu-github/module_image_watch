@@ -6,19 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * description: 当前类描述信息
- * created by kalu on 2012017/11/4:20:57
- **/
+ * description: 参数
+ * created by kalu on 2018/6/20 19:05
+ */
 final class PhotoAttr {
 
     // 长按保存图片
     private boolean imaageLongPressSave = false;
-    // 大图集合
-    private List<String> imageUrlList;
-    // 小图集合
-    private List<String> imageLittleUrlList;
-    // 图片原始位置信息集合
-    private List<ImageView> imageList;
+    // 图片地址集合
+    private List<? extends PhotoModel> photoModelList;
     // 图片原始位置信息集合
     private List<PhotoImageInfo> imageLocalInfoList;
     // 默认position
@@ -31,119 +27,115 @@ final class PhotoAttr {
     private boolean isOpenImageTransAnim = true;
     private OnPhotoChangeListener onPhotoChangeListener;
 
-    public List<String> getImageUrlList() {
-        return imageUrlList;
+    public final String getPhotoUrl() {
+        return photoModelList.get(imageDefaultPosition).getUrl();
     }
 
-    public void setImageUrlList(List<String> imageUrlList) {
-        this.imageUrlList = imageUrlList;
+    public final String getPhotoUrl(int position) {
+        return photoModelList.get(position).getUrl();
     }
 
-    public int getImageDefaultPosition() {
+    public final String getPhotoUrlLittle() {
+        return photoModelList.get(imageDefaultPosition).getUrlLittle();
+    }
+
+    public final String getPhotoUrlLittle(int position) {
+        return photoModelList.get(position).getUrlLittle();
+    }
+
+    public final void setPhotoModelList(List<? extends PhotoModel> photoModelList) {
+        this.photoModelList = photoModelList;
+    }
+
+    public final int getImageDefaultPosition() {
         return imageDefaultPosition;
     }
 
-    public void setImageDefaultPosition(int imageDefaultPosition) {
+    public final void setImageDefaultPosition(int imageDefaultPosition) {
         this.imageDefaultPosition = imageDefaultPosition;
     }
 
-    public List<ImageView> getImageList() {
-        return imageList;
-    }
-
-    public void setImageList(List<ImageView> imageList) {
-        this.imageList = imageList;
-    }
-
-    public int getImageBackgroundColor() {
+    public final int getImageBackgroundColor() {
         return imageBackgroundColor;
     }
 
-    public void setImageBackgroundColor(int imageBackgroundColor) {
+    public final void setImageBackgroundColor(int imageBackgroundColor) {
         this.imageBackgroundColor = imageBackgroundColor;
     }
 
-    public int getImageDefaultResource() {
+    public final int getImageDefaultResource() {
         return imageDefaultResource;
     }
 
-    public void setImageDefaultResource(int imageDefaultResource) {
+    public final void setImageDefaultResource(int imageDefaultResource) {
         this.imageDefaultResource = imageDefaultResource;
     }
 
-    public boolean isOpenImageTransAnim() {
+    public final boolean isOpenImageTransAnim() {
         return isOpenImageTransAnim;
     }
 
-    public void setOpenImageTransAnim(boolean openImageTransAnim) {
+    public final void setOpenImageTransAnim(boolean openImageTransAnim) {
         isOpenImageTransAnim = openImageTransAnim;
     }
 
-    public OnPhotoChangeListener getOnPhotoChangeListener() {
+    public final OnPhotoChangeListener getOnPhotoChangeListener() {
         return onPhotoChangeListener;
     }
 
-    public void setOnPhotoChangeListener(OnPhotoChangeListener onPhotoChangeListener) {
+    public final void setOnPhotoChangeListener(OnPhotoChangeListener onPhotoChangeListener) {
         this.onPhotoChangeListener = onPhotoChangeListener;
     }
 
-    public List<String> getImageLittleUrlList() {
-        return imageLittleUrlList;
-    }
-
-    public void setImageLittleUrlList(List<String> imageLittleUrlList) {
-        this.imageLittleUrlList = imageLittleUrlList;
-    }
-
-    public boolean isImaageLongPressSave() {
+    public final boolean isImaageLongPressSave() {
         return imaageLongPressSave;
     }
 
-    public void setImageLongPressSave(boolean imaageLongPressSave) {
+    public final void setImageLongPressSave(boolean imaageLongPressSave) {
         this.imaageLongPressSave = imaageLongPressSave;
     }
 
-    public List<PhotoImageInfo> getImageLocalInfoList() {
+    public final List<PhotoImageInfo> getImageLocalInfoList() {
         return imageLocalInfoList;
     }
 
-    public void setImageLocalInfoList(List<PhotoImageInfo> imageLocalInfoList) {
+    public final void setImageLocalInfoList(List<PhotoImageInfo> imageLocalInfoList) {
         this.imageLocalInfoList = imageLocalInfoList;
     }
 
-    public int getImageDrawableIntrinsicWidth(int position) {
+    public final int getImageDrawableIntrinsicWidth(int position) {
         return imageLocalInfoList.get(position).getImageDrawableIntrinsicWidth();
     }
 
-    public int getImageDrawableIntrinsicHeight(int position) {
+    public final int getImageDrawableIntrinsicHeight(int position) {
         return imageLocalInfoList.get(position).getImageDrawableIntrinsicHeight();
     }
 
-    public int getImageX(int position) {
+    public final int getImageX(int position) {
         return imageLocalInfoList.get(position).getImageX();
     }
 
-    public int getImageY(int position) {
+    public final int getImageY(int position) {
         return imageLocalInfoList.get(position).getImageY();
     }
 
-    public int getDefaultImageDrawableIntrinsicWidth() {
+    public final int getDefaultImageDrawableIntrinsicWidth() {
         return imageLocalInfoList.get(imageDefaultPosition).getImageDrawableIntrinsicWidth();
     }
 
-    public int getDefaultImageDrawableIntrinsicHeight() {
+    public final int getDefaultImageDrawableIntrinsicHeight() {
         return imageLocalInfoList.get(imageDefaultPosition).getImageDrawableIntrinsicHeight();
     }
 
-    public int getDefaultImageX() {
+    public final int getDefaultImageX() {
         return imageLocalInfoList.get(imageDefaultPosition).getImageX();
     }
 
-    public int getDefaultImageY() {
+    public final int getDefaultImageY() {
         return imageLocalInfoList.get(imageDefaultPosition).getImageY();
     }
 
-    public void addImageLocalInfo(PhotoImageInfo mPhotoImageInfo) {
+    public final void addImageLocalInfo(PhotoImageInfo mPhotoImageInfo) {
 
         if (null == imageLocalInfoList) {
             imageLocalInfoList = new ArrayList<>();
@@ -152,28 +144,23 @@ final class PhotoAttr {
         imageLocalInfoList.add(mPhotoImageInfo);
     }
 
-    public int getImageCount() {
+    public final int getImageCount() {
 
-        if (null == imageUrlList) {
+        if (null == photoModelList || photoModelList.size() == 0) {
             return 0;
         }
 
-        return imageUrlList.size();
-    }
-
-    /**
-     * 默认起始图片——小图url
-     */
-    public String getImageOriginalUrl() {
-        if (null == imageLittleUrlList || imageLittleUrlList.size() == 0) {
-            return "";
-        } else {
-            return imageLittleUrlList.get(imageDefaultPosition);
+        int size = 0;
+        for (PhotoModel temp : photoModelList) {
+            if (temp.getUrl().startsWith("http")) {
+                ++size;
+            }
         }
+
+        return size;
     }
 
-    // 每一个图片位置信息
-    static class PhotoImageInfo {
+    static final class PhotoImageInfo {
 
         // 图片真实显示背景drawable宽度
         private int imageDrawableIntrinsicWidth;

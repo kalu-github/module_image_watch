@@ -11,15 +11,18 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.demo.photo.util.DeviceUtil;
 import com.demo.photo.util.GlideUtil;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,20 +32,26 @@ import java.util.List;
  */
 public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeListener {
 
-    private final ImageView mImagePlaceholder;
     private PhotoAttr attr;
-    private IndicatorView mPhotoPointView;
-    private ViewPager viewPager;
     private boolean isPressedBack = false;
     private PhotoDialog mPhotoDialog;
     private Activity mActivity;
     private Activity activity;
+
+    private final ImageView mImagePlaceholder = new ImageView(getContext().getApplicationContext());
+    private final ViewPager viewPager = new ViewPager(getContext().getApplicationContext());
+    private final ImageView saveButton = new ImageView(getContext().getApplicationContext());
+    private final ImageView ratateButton = new ImageView(getContext().getApplicationContext());
+    private final ImageView delButtom = new ImageView(getContext().getApplicationContext());
+    private final TextView numImage = new TextView(getContext().getApplicationContext());
+    private PhotoDotView mPhotoPointView = new PhotoDotView(getContext().getApplicationContext());
 
     private PhotoLayout(Activity activity, final PhotoAttr attr) {
         super(activity.getApplicationContext());
         this.activity = activity;
 
         setBackgroundColor(attr.getImageBackgroundColor());
+        //   BarView.setColor(activity, attr.getImageBackgroundColor());
         this.attr = attr;
         this.mActivity = activity;
 
@@ -53,7 +62,6 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         int imageY = attr.getDefaultImageY();
 
         boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        mImagePlaceholder = new ImageView(getContext().getApplicationContext());
         mImagePlaceholder.setVisibility(openImageTransAnim ? View.VISIBLE : View.INVISIBLE);
         addView(mImagePlaceholder);
         LayoutParams params = new LayoutParams(imageDrawableIntrinsicWidth, imageDrawableIntrinsicHeight);
@@ -62,10 +70,9 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         params.topMargin = imageY;
         // 1.2 位置参数
         mImagePlaceholder.setLayoutParams(params);
-        GlideUtil.loadImageSimple(activity, mImagePlaceholder, attr.getImageOriginalUrl());
+        GlideUtil.loadImageSimple(activity, mImagePlaceholder, attr.getPhotoUrlLittle());
 
         // 2.初始化ViewPager
-        viewPager = new ViewPager(activity.getApplicationContext());
         viewPager.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewPager.setVisibility(openImageTransAnim ? View.INVISIBLE : View.VISIBLE);
         viewPager.addOnPageChangeListener(this);
@@ -74,7 +81,6 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         // 3.指示器
         if (attr.getImageCount() > 1) {
-            mPhotoPointView = new IndicatorView(getContext().getApplicationContext());
             LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             mPhotoPointView.setVisibility(openImageTransAnim ? View.INVISIBLE : View.VISIBLE);
             layoutParams.gravity = Gravity.BOTTOM;
@@ -84,6 +90,20 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             addView(mPhotoPointView);
         }
 
+        // 图片
+        final float circleSize = 45 * getContext().getApplicationContext().getResources().getDisplayMetrics().density + 0.5f;
+        LayoutParams params4 = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) circleSize);
+        params4.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        params4.bottomMargin = (int) (circleSize * 0.5f);
+        numImage.setLayoutParams(params4);
+        numImage.setVisibility(View.INVISIBLE);
+        numImage.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        final float testsize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 6f, getContext().getApplicationContext().getResources().getDisplayMetrics());
+        numImage.setTextSize(testsize);
+        numImage.setText((attr.getImageDefaultPosition() + 1) + File.separator + attr.getImageCount());
+        numImage.setTextColor(Color.WHITE);
+        addView(numImage);
+
         // 3.轮播图设置数据
         PhotoAdapter photoAdapter = new PhotoAdapter(mActivity);
         photoAdapter.setImageAttr(attr);
@@ -92,16 +112,14 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         // 3.显示大图
         mPhotoDialog = new PhotoDialog(activity);
-        mPhotoDialog.setContentView(PhotoLayout.this);
+        LayoutParams params3 = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mPhotoDialog.setContentView(PhotoLayout.this, params3);
         mPhotoDialog.show();
 
-        mPhotoDialog.setOnBackPressedListener(new PhotoDialog.OnBackPressedListener() {
-            @Override
-            public void onBackPressed() {
+        mPhotoDialog.setOnBackPressedListener(() -> {
 
-                if (isPressedBack) return;
-                animDismiss();
-            }
+            if (isPressedBack) return;
+            animDismiss();
         });
 
         // 4.开始动画
@@ -143,7 +161,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
         final boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        animatorSet.setDuration(openImageTransAnim ? 300 : 0);
+        animatorSet.setDuration(openImageTransAnim ? 200 : 0);
         animatorSet.setStartDelay(50);
 
         animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -158,8 +176,20 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
                 // 2.显示轮播图
                 viewPager.setVisibility(View.VISIBLE);
-                if (null != mPhotoPointView) {
-                    mPhotoPointView.setVisibility(View.VISIBLE);
+                if (null != ratateButton) {
+                    ratateButton.setVisibility(View.VISIBLE);
+                }
+
+                if (null != saveButton) {
+                    saveButton.setVisibility(View.VISIBLE);
+                }
+
+                if (null != delButtom) {
+                    delButtom.setVisibility(View.VISIBLE);
+                }
+
+                if (null != numImage) {
+                    numImage.setVisibility(View.VISIBLE);
                 }
 
                 // 图片默认索引
@@ -179,21 +209,32 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         isPressedBack = true;
         setBackgroundColor(Color.TRANSPARENT);
+        //   BarView.setColor(activity, Color.parseColor("#13ad67"));
 
         if (null != viewPager) {
             viewPager.setEnabled(false);
             viewPager.setVisibility(View.INVISIBLE);
         }
 
-        if (null != mPhotoPointView) {
-            mPhotoPointView.setVisibility(View.INVISIBLE);
+        if (null != delButtom) {
+            delButtom.setVisibility(View.INVISIBLE);
+        }
+
+        if (null != numImage) {
+            numImage.setVisibility(View.INVISIBLE);
+        }
+
+        if (null != ratateButton) {
+            ratateButton.setVisibility(View.INVISIBLE);
+        }
+
+        if (null != saveButton) {
+            saveButton.setVisibility(View.INVISIBLE);
         }
 
         final int position = viewPager.getCurrentItem();
         if (null != mImagePlaceholder) {
-            final PhotoView image = (PhotoView) viewPager.getChildAt(position);
-            final String imageUrl = image.getImageUrl();
-            GlideUtil.loadImageSimple(activity, mImagePlaceholder, imageUrl);
+            GlideUtil.loadImageSimple(activity, mImagePlaceholder, attr.getPhotoUrl(position));
             mImagePlaceholder.setVisibility(View.VISIBLE);
         }
 
@@ -221,7 +262,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         final AnimatorSet animatorSet = new AnimatorSet();
         final boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        animatorSet.setDuration(openImageTransAnim ? 300 : 0);
+        animatorSet.setDuration(openImageTransAnim ? 200 : 0);
         animatorSet.setStartDelay(openImageTransAnim ? 50 : 0);
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
 
@@ -257,10 +298,14 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     @Override
     public void onPageSelected(final int position) {
 
+        if (null != numImage) {
+            numImage.setText((position + 1) + File.separator + attr.getImageCount());
+        }
+
         final ImageView image = (ImageView) viewPager.getChildAt(position);
         Object tag = image.getTag(image.getId());
 
-        final String bigUrl = attr.getImageUrlList().get(position);
+        final String bigUrl = attr.getPhotoUrl(position);
 
         if (null != tag && tag instanceof String && bigUrl.equals(tag)) {
             return;
@@ -321,8 +366,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         private boolean isOpenImageTransAnim = true;
         private int imageBackgroundColor = Color.BLACK;
-        private List<String> imageUrlList;
-        private List<String> imageLittleUrlList;
+        private List<? extends PhotoModel> photoModelList;
         private List<ImageView> imageViews;
         private boolean imageLongPressSave;
 
@@ -330,23 +374,13 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             this.activity = activity;
         }
 
-        public Builder setPhotoUrlList(List<String> imageUrlList) {
-            this.imageUrlList = imageUrlList;
+        public Builder setPhotoModelList(List<? extends PhotoModel> photoModelList) {
+            this.photoModelList = photoModelList;
             return this;
         }
 
-        public Builder setPhotoUrlList(String... imageUrl) {
-            this.imageUrlList = Arrays.asList(imageUrl);
-            return this;
-        }
-
-        public Builder setPhotoLittleUrlList(List<String> imageLittleUrlList) {
-            this.imageLittleUrlList = imageLittleUrlList;
-            return this;
-        }
-
-        public Builder setPhotoLittleUrlList(String... imageLittleUrlList) {
-            this.imageLittleUrlList = Arrays.asList(imageLittleUrlList);
+        public <T extends PhotoModel> Builder setPhotoModelList(T... photoModel) {
+            this.photoModelList = Arrays.asList(photoModel);
             return this;
         }
 
@@ -355,8 +389,8 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             return this;
         }
 
-        public Builder setPhotoViewList(ImageView... views) {
-            this.imageViews = Arrays.asList(views);
+        public Builder setPhotoViewList(ImageView... imageViews) {
+            this.imageViews = Arrays.asList(imageViews);
             return this;
         }
 
@@ -365,7 +399,6 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             return this;
         }
 
-        // 默认显示第几张图片
         public Builder setPhotoDefaultPosition(int imageDefaultPosition) {
             this.imageDefaultPosition = imageDefaultPosition;
             return this;
@@ -386,27 +419,16 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             return this;
         }
 
-        /**
-         * 长按保存
-         *
-         * @param imageLongPressSave 长按保存
-         * @return
-         */
         public Builder setPhotoLongPressSave(boolean imageLongPressSave) {
             this.imageLongPressSave = imageLongPressSave;
             return this;
         }
 
-        public PhotoLayout show() {
+        public void show() {
 
-            PhotoAttr attr = new PhotoAttr();
-
-            if (imageUrlList != null && !imageUrlList.isEmpty()) {
-                attr.setImageUrlList(imageUrlList);
-            }
-
-            if (imageLittleUrlList != null && !imageLittleUrlList.isEmpty()) {
-                attr.setImageLittleUrlList(imageLittleUrlList);
+            final PhotoAttr attr = new PhotoAttr();
+            if (photoModelList != null && !photoModelList.isEmpty()) {
+                attr.setPhotoModelList(photoModelList);
             }
 
             if (null != listener) {
@@ -425,12 +447,21 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
             for (int i = 0; i < imageViews.size(); i++) {
 
-                ImageView imageOriginal = imageViews.get(i);
+                final ImageView imageOriginal = imageViews.get(i);
+                if (null == imageOriginal) {
+                    new RuntimeException("当前点击的图片, 不存在");
+                    return;
+                }
 
                 int imageWidth = imageOriginal.getWidth();
                 int imageHeight = imageOriginal.getHeight();
 
-                Drawable imageDrawable = imageOriginal.getDrawable();
+                final Drawable imageDrawable = imageOriginal.getDrawable();
+                if (null == imageDrawable) {
+                    new RuntimeException("当前点击的图片, 没有背景图片");
+                    return;
+                }
+
                 int imageDrawableIntrinsicWidth = imageDrawable.getIntrinsicWidth();
                 int imageDrawableIntrinsicHeight = imageDrawable.getIntrinsicHeight();
 
@@ -446,8 +477,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
                 photoImageInfo.setImageY(imageY);
                 attr.addImageLocalInfo(photoImageInfo);
             }
-
-            return new PhotoLayout(activity, attr);
+            new PhotoLayout(activity, attr);
         }
     }
 }
