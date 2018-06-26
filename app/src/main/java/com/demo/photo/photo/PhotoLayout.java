@@ -103,9 +103,12 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         numImage.setText((attr.getImageDefaultPosition() + 1) + File.separator + attr.getImageCount());
         numImage.setTextColor(Color.WHITE);
         addView(numImage);
+    }
+
+    public void show() {
 
         // 3.轮播图设置数据
-        PhotoAdapter photoAdapter = new PhotoAdapter(mActivity);
+        final PhotoAdapter photoAdapter = new PhotoAdapter(mActivity);
         photoAdapter.setImageAttr(attr);
         photoAdapter.setImageLayout(PhotoLayout.this);
         viewPager.setAdapter(photoAdapter);
@@ -477,7 +480,9 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
                 photoImageInfo.setImageY(imageY);
                 attr.addImageLocalInfo(photoImageInfo);
             }
-            new PhotoLayout(activity, attr);
+
+            final PhotoLayout photoLayout = new PhotoLayout(activity, attr);
+            photoLayout.show();
         }
     }
 }
