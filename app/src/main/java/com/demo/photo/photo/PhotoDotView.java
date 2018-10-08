@@ -24,7 +24,7 @@ import com.demo.photo.R;
  * description: 指示器
  * created by kalu on 17-10-15 上午5:28
  */
-public final class IndicatorView extends View implements ViewPager.OnPageChangeListener {
+public final class PhotoDotView extends View implements ViewPager.OnPageChangeListener {
 
     private final float bezFactor = 0.551915024494f;
     // 默认指示点半径
@@ -77,20 +77,19 @@ public final class IndicatorView extends View implements ViewPager.OnPageChangeL
     private int curPos = 0;  //当前圆的位置
     private int nextPos = 0; //圆要到达的下一个位置
 
-
     private ViewPager mViewPage;
 
     /********************************************************************************************/
 
-    public IndicatorView(Context context) {
+    public PhotoDotView(Context context) {
         this(context, null);
     }
 
-    public IndicatorView(Context context, AttributeSet attrs) {
+    public PhotoDotView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public IndicatorView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PhotoDotView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         // 获得我们所定义的自定义样式属性
