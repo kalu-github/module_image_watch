@@ -191,8 +191,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         final int position = viewPager.getCurrentItem();
         if (null != mImagePlaceholder) {
-            final PhotoView image = (PhotoView) viewPager.getChildAt(position);
-            final String imageUrl = image.getImageUrl();
+            final String imageUrl = attr.getImageUrlList().get(position);
             GlideUtil.loadImageSimple(activity, mImagePlaceholder, imageUrl);
             mImagePlaceholder.setVisibility(View.VISIBLE);
         }
@@ -431,6 +430,13 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
                 int imageHeight = imageOriginal.getHeight();
 
                 Drawable imageDrawable = imageOriginal.getDrawable();
+                if (null == imageDrawable) {
+                    int imageDefaultResource = attr.getImageDefaultResource();
+                    if (imageDefaultResource == 0) continue;
+                    imageOriginal.setImageResource(imageDefaultResource);
+                    imageDrawable = imageOriginal.getDrawable();
+                }
+
                 int imageDrawableIntrinsicWidth = imageDrawable.getIntrinsicWidth();
                 int imageDrawableIntrinsicHeight = imageDrawable.getIntrinsicHeight();
 

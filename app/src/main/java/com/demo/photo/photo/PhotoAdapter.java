@@ -50,10 +50,10 @@ final class PhotoAdapter extends PagerAdapter {
 
         Context applicationContext = container.getContext().getApplicationContext();
         final PhotoView newImage = new PhotoView(applicationContext);
-        newImage.setImageUrl(mPhotoAttr.getImageLittleUrlList().get(position));
+//        newImage.setImageUrl(mPhotoAttr.getImageLittleUrlList().get(position));
 //        newImage.setImaageLongPressSave(mPhotoAttr.isImaageLongPressSave());
 //        newImage.setPhotoImageLayout(mPhotoLayout);
-        newImage.setOnPhotoChangeListener(mPhotoAttr.getOnPhotoChangeListener());
+//        newImage.setOnPhotoChangeListener(mPhotoAttr.getOnPhotoChangeListener());
 
         String littleUrl = mPhotoAttr.getImageLittleUrlList().get(position);
         GlideUtil.loadImageSimple(mActivity, newImage, littleUrl);
