@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.android.support:support-fragment-27.1.1">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/a3f06d471f4be2064f7e0a42dad52aed/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/a3f06d471f4be2064f7e0a42dad52aed/res" />
+      <root url="jar://D:/AndroidSDK/ide/studio_gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/a3ffdea04f815be6c700a38f64c56765/jars/classes.jar!/" />
+      <root url="file://D:/AndroidSDK/ide/studio_gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/a3ffdea04f815be6c700a38f64c56765/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.android.support/support-fragment/27.1.1/94732bda44fba11302c58e459b7c1f47e7521bf9/support-fragment-27.1.1-sources.jar!/" />
+      <root url="jar://D:/AndroidSDK/ide/studio_gradle/caches/modules-2/files-2.1/com.android.support/support-fragment/27.1.1/94732bda44fba11302c58e459b7c1f47e7521bf9/support-fragment-27.1.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

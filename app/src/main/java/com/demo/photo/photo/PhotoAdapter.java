@@ -7,32 +7,28 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.demo.photo.util.GlideUtil;
+import com.demo.photo.util.LogUtil;
+
+import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 final class PhotoAdapter extends PagerAdapter {
 
-    private Activity mActivity;
-    private PhotoLayout mPhotoLayout;
-    private PhotoAttr mPhotoAttr;
+    private List<PhotoModel> list;
+    private int begin;
 
-    public PhotoAdapter(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
-
-    public void setImageAttr(PhotoAttr mPhotoAttr) {
-        this.mPhotoAttr = mPhotoAttr;
-    }
-
-    public void setImageLayout(PhotoLayout mPhotoLayout) {
-        this.mPhotoLayout = mPhotoLayout;
+    public PhotoAdapter(final List<PhotoModel> list, final int begin) {
+        this.list = list;
+        this.begin = begin;
     }
 
     @Override
     public int getCount() {
-        return mPhotoAttr.getImageCount();
+        return list.size();
     }
 
     @Override
@@ -45,25 +41,33 @@ final class PhotoAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
+    /**
+     * 显示小图
+     *
+     * @param container
+     * @param position
+     * @return
+     */
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
+        LogUtil.e("kalu", "instantiateItem");
 
-        Context applicationContext = container.getContext().getApplicationContext();
-        final PhotoView newImage = new PhotoView(applicationContext);
-//        newImage.setImageUrl(mPhotoAttr.getImageLittleUrlList().get(position));
-//        newImage.setImaageLongPressSave(mPhotoAttr.isImaageLongPressSave());
-//        newImage.setPhotoImageLayout(mPhotoLayout);
-//        newImage.setOnPhotoChangeListener(mPhotoAttr.getOnPhotoChangeListener());
+        // step1
+        final Context applicationContext = container.getContext().getApplicationContext();
+        final PhotoModel photoModel = list.get(position);
+        final String url = photoModel.getUrl();
 
-        String littleUrl = mPhotoAttr.getImageLittleUrlList().get(position);
-        GlideUtil.loadImageSimple(mActivity, newImage, littleUrl);
-
-        // 2. 设置默认属性
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        // step2
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
-        newImage.setLayoutParams(params);
-        container.addView(newImage);
+        final PhotoViewBack image1 = new PhotoViewBack(applicationContext);
+        image1.setLayoutParams(params);
 
-        return newImage;
+        // step3
+        container.addView(image1);
+        image1.setTag(image1.getId(), url);
+        GlideUtil.loadImageSimple(image1.getContext(), image1, url);
+
+        return image1;
     }
 }

@@ -1,13 +1,22 @@
 package com.demo.photo.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+
+import java.io.File;
 
 /**
  * description: 图片加载工具类
@@ -61,6 +70,7 @@ public class GlideUtil {
      * @param defaultImage 默认占位图
      * @param isCircle     圆形图片处理
      */
+    @SuppressLint("CheckResult")
     private static void loadImage(Context context, ImageView imageView, String url, String style, int defaultImage, boolean isCircle, boolean isZip) {
 
         // 网络图片
@@ -75,7 +85,8 @@ public class GlideUtil {
 
             if (defaultImage != 0) {
                 options.placeholder(defaultImage)
-                        .error(defaultImage);
+                        .error(defaultImage)
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
             }
 
             if (isCircle) {
@@ -86,8 +97,23 @@ public class GlideUtil {
                 options.centerCrop();
             }
 
-
             builder.apply(options).into(imageView);
+//            String finalUrl = url;
+//            builder.apply(options).into(new SimpleTarget<Drawable>() {
+//
+//                @Override
+//                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+//
+//                    final int width = resource.getIntrinsicWidth();
+//                    final int height = resource.getIntrinsicHeight();
+//                    final boolean isGif = (resource instanceof GifDrawable);
+//                    LogUtil.e("kalu", "loadImage ==> width = " + width + ", height = " + height + ", isGif = " + isGif + ", url = " + finalUrl);
+//
+////                    Glide.with(context).l
+//                    imageView.setImageDrawable(resource);
+//                }
+//            });
+
         }
         // 错误默认图片
         else {
@@ -123,6 +149,7 @@ public class GlideUtil {
         }
         builder.apply(options).into(imageView);
     }
+
 
 //    /**
 //     * 清除缓存
@@ -160,4 +187,38 @@ public class GlideUtil {
 //
 //        return result;
 //    }
+
+    private final void  ss(final Context context, final String url){
+
+//        Glide.with(context).load(url).downloadOnly(new ProgressTarget<String, File>(url, null) {
+//            @Override
+//            public void onLoadStarted(Drawable placeholder) {
+//                super.onLoadStarted(placeholder);
+//                ringProgressBar.setVisibility(View.VISIBLE);
+//                ringProgressBar.setProgress(0);
+//            }
+//
+//            @Override
+//            public void onProgress(long bytesRead, long expectedLength) {
+//                int p = 0;
+//                if (expectedLength >= 0) {
+//                    p = (int) (100 * bytesRead / expectedLength);
+//                }
+//                ringProgressBar.setProgress(p);
+//            }
+//
+//            @Override
+//            public void onResourceReady(File resource, GlideAnimation<? super File> animation) {
+//                super.onResourceReady(resource, animation);
+//                ringProgressBar.setVisibility(View.GONE);
+//                largeImageView.setImage(new FileBitmapDecoderFactory(resource));
+//            }
+//
+//            @Override
+//            public void getSize(SizeReadyCallback cb) {
+//                cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+//            }
+////        });
+
+    }
 }

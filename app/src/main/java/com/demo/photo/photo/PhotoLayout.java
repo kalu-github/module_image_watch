@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -17,77 +18,74 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.demo.photo.model.ImageModel;
 import com.demo.photo.util.DeviceUtil;
 import com.demo.photo.util.GlideUtil;
+import com.demo.photo.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * description 大图加载
- * created by kalu on 2016/10/23 13:11
+ * description: 大图预览, 重构版本
+ * create by kalu on 2018/10/11 18:07
  */
 public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageChangeListener {
 
     private final ImageView mImagePlaceholder;
-    private PhotoAttr attr;
-    private IndicatorView mPhotoPointView;
+    private PhotoDotView mPhotoPointView;
     private ViewPager viewPager;
     private boolean isPressedBack = false;
     private PhotoDialog mPhotoDialog;
-    private Activity mActivity;
-    private Activity activity;
 
-    private PhotoLayout(Activity activity, final PhotoAttr attr) {
+    private PhotoLayout(final Activity activity,
+                        final boolean openAnim,
+                        final List<PhotoModel> list, final int begin) {
         super(activity.getApplicationContext());
-        this.activity = activity;
+        setBackgroundColor(Color.BLACK);
 
-        setBackgroundColor(attr.getImageBackgroundColor());
-        this.attr = attr;
-        this.mActivity = activity;
+        final PhotoModel beginModel = list.get(begin);
+        final int startX = beginModel.getImageX();
+        final int startY = beginModel.getImageY();
+        final int startWidth = beginModel.getDrawableIntrinsicWidth();
+        final int startHeight = beginModel.getDrawableIntrinsicHeight();
 
-        // 1.3 创建对象
-        int imageDrawableIntrinsicWidth = attr.getDefaultImageDrawableIntrinsicWidth();
-        int imageDrawableIntrinsicHeight = attr.getDefaultImageDrawableIntrinsicHeight();
-        int imageX = attr.getDefaultImageX();
-        int imageY = attr.getDefaultImageY();
-
-        boolean openImageTransAnim = attr.isOpenImageTransAnim();
         mImagePlaceholder = new ImageView(getContext().getApplicationContext());
-        mImagePlaceholder.setVisibility(openImageTransAnim ? View.VISIBLE : View.INVISIBLE);
+        mImagePlaceholder.setVisibility(openAnim ? View.VISIBLE : View.INVISIBLE);
         addView(mImagePlaceholder);
-        LayoutParams params = new LayoutParams(imageDrawableIntrinsicWidth, imageDrawableIntrinsicHeight);
+        LayoutParams params = new LayoutParams(startWidth, startHeight);
         params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.leftMargin = imageX;
-        params.topMargin = imageY;
+        params.leftMargin = startX;
+        params.topMargin = startY;
         // 1.2 位置参数
         mImagePlaceholder.setLayoutParams(params);
-        GlideUtil.loadImageSimple(activity, mImagePlaceholder, attr.getImageOriginalUrl());
+
+        final String urlLittle = list.get(begin).getUrlLittle();
+        GlideUtil.loadImageSimple(activity, mImagePlaceholder, urlLittle);
 
         // 2.初始化ViewPager
         viewPager = new ViewPager(activity.getApplicationContext());
         viewPager.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        viewPager.setVisibility(openImageTransAnim ? View.INVISIBLE : View.VISIBLE);
+        viewPager.setVisibility(openAnim ? View.INVISIBLE : View.VISIBLE);
         viewPager.addOnPageChangeListener(this);
-        viewPager.setOffscreenPageLimit(attr.getImageCount() + 2);
+        viewPager.setOffscreenPageLimit(list.size() + 2);
         addView(viewPager);
 
         // 3.指示器
-        if (attr.getImageCount() > 1) {
-            mPhotoPointView = new IndicatorView(getContext().getApplicationContext());
+        if (list.size() > 1) {
+            mPhotoPointView = new PhotoDotView(getContext().getApplicationContext());
             LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mPhotoPointView.setVisibility(openImageTransAnim ? View.INVISIBLE : View.VISIBLE);
+            mPhotoPointView.setVisibility(openAnim ? View.INVISIBLE : View.VISIBLE);
             layoutParams.gravity = Gravity.BOTTOM;
             layoutParams.bottomMargin = 100;
             mPhotoPointView.setLayoutParams(layoutParams);
-            mPhotoPointView.attach2ViewPage(viewPager, attr.getImageCount());
+            mPhotoPointView.attach2ViewPage(viewPager, list.size());
             addView(mPhotoPointView);
         }
 
         // 3.轮播图设置数据
-        PhotoAdapter photoAdapter = new PhotoAdapter(mActivity);
-        photoAdapter.setImageAttr(attr);
-        photoAdapter.setImageLayout(PhotoLayout.this);
+        final PhotoAdapter photoAdapter = new PhotoAdapter(list, begin);
         viewPager.setAdapter(photoAdapter);
 
         // 3.显示大图
@@ -95,27 +93,24 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         mPhotoDialog.setContentView(PhotoLayout.this);
         mPhotoDialog.show();
 
-        mPhotoDialog.setOnBackPressedListener(new PhotoDialog.OnBackPressedListener() {
-            @Override
-            public void onBackPressed() {
+        mPhotoDialog.setOnBackPressedListener(() -> {
 
-                if (isPressedBack) return;
-                animDismiss();
-            }
+            if (isPressedBack) return;
+
+            final int position = viewPager.getCurrentItem();
+            final PhotoModel photoModel = list.get(position);
+            closeAnim(openAnim, photoModel);
         });
 
         // 4.开始动画
-        animStart(mImagePlaceholder);
+        startAnim(mImagePlaceholder, openAnim, begin, startX, startY, startWidth, startHeight);
     }
 
     /*******************************************************************************************/
 
-    // 开始动画
-    private void animStart(final ImageView animImage) {
-
-        if (null != viewPager) {
-            viewPager.setEnabled(true);
-        }
+    private final void startAnim(final ImageView animImage, final boolean openAnim, final int begin,
+                                 final int startTranX, final int startTranY,
+                                 final int startWidth, final int startHeight) {
 
         final Context context = getContext().getApplicationContext();
 
@@ -123,18 +118,25 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         final int widthPixels = displayMetrics.widthPixels;
         final int heightPixels = displayMetrics.heightPixels;
 
-        final int startTranX = attr.getDefaultImageX();
-        final int endTranX = (widthPixels - attr.getDefaultImageDrawableIntrinsicWidth()) / 2;
+        final int scaleX = widthPixels / startWidth;
+        final int scaleY = heightPixels / startHeight;
+        final int scaleMin = Math.min(scaleX, scaleY);
+        LogUtil.e("kalu", "startAnim ==> scaleX = " + scaleX + ", scaleY = " + scaleY + ", scaleMin = " + scaleMin);
 
-        final int startTranY = attr.getDefaultImageY();
-        final int endTranY = (heightPixels - attr.getDefaultImageDrawableIntrinsicHeight()) / 2;
+        final int endWidth = startWidth * scaleMin;
+        final int endHeight = startHeight * scaleMin;
+        LogUtil.e("kalu", "startAnim ==> startWidth = " + startWidth + ", endWidth = " + endWidth + ", startHeight = " + startHeight + ", endHeight = " + endHeight);
 
-        final float endScale = widthPixels * 1.f / attr.getDefaultImageDrawableIntrinsicWidth();
+        final int endTranX = (widthPixels - startWidth) / 2;
+        final int endTranY = (heightPixels - startHeight) / 2;
+
+        final float endScaleX = widthPixels * 1.f / startWidth;
+        final float endScaleY = heightPixels * 1.f / startHeight;
 
         // x 方向放大
-        final ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(animImage, "scaleX", 1, endScale);
+        final ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(animImage, "scaleX", 1, endScaleX);
         // y 方向放大
-        final ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(animImage, "scaleY", 1, endScale);
+        final ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(animImage, "scaleY", 1, endScaleY);
         // x 方向平移
         final ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(animImage, "x", startTranX, endTranX);
         // y 方向平移
@@ -142,8 +144,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
-        final boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        animatorSet.setDuration(openImageTransAnim ? 300 : 0);
+        animatorSet.setDuration(openAnim ? 300 : 0);
         animatorSet.setStartDelay(50);
 
         animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -163,11 +164,10 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
                 }
 
                 // 图片默认索引
-                final int imageDefaultPosition = attr.getImageDefaultPosition();
-                viewPager.setCurrentItem(imageDefaultPosition, false);
+                viewPager.setCurrentItem(begin, false);
 
-                if (imageDefaultPosition == 0) {
-                    onPageSelected(imageDefaultPosition);
+                if (begin == 0) {
+                    onPageSelected(begin);
                 }
             }
         });
@@ -175,7 +175,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     }
 
     // 结束动画
-    void animDismiss() {
+    private final void closeAnim(final boolean openAnim, PhotoModel photoModel) {
 
         isPressedBack = true;
         setBackgroundColor(Color.TRANSPARENT);
@@ -189,10 +189,9 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             mPhotoPointView.setVisibility(View.INVISIBLE);
         }
 
-        final int position = viewPager.getCurrentItem();
         if (null != mImagePlaceholder) {
-            final String imageUrl = attr.getImageUrlList().get(position);
-            GlideUtil.loadImageSimple(activity, mImagePlaceholder, imageUrl);
+            final String imageUrl = photoModel.getUrl();
+            GlideUtil.loadImageSimple(getContext(), mImagePlaceholder, imageUrl);
             mImagePlaceholder.setVisibility(View.VISIBLE);
         }
 
@@ -200,14 +199,14 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         final int widthPixels = displayMetrics.widthPixels;
         final int heightPixels = displayMetrics.heightPixels;
 
-        final int endX = attr.getImageX(position);
-        final int beginX = (widthPixels - attr.getImageDrawableIntrinsicWidth(position)) / 2;
+        final int endX = photoModel.getImageX();
+        final int beginX = (widthPixels - photoModel.getDrawableIntrinsicWidth()) / 2;
 
-        final int endY = attr.getImageY(position);
-        final int beginY = (heightPixels - attr.getImageDrawableIntrinsicHeight(position)) / 2;
+        final int endY = photoModel.getImageY();
+        final int beginY = (heightPixels - photoModel.getDrawableIntrinsicHeight()) / 2;
 
-        final float beginScaleX = widthPixels * 1.f / attr.getImageDrawableIntrinsicWidth(position);
-        final float beginScaleY = widthPixels * 1.f / attr.getImageDrawableIntrinsicHeight(position);
+        final float beginScaleX = widthPixels * 1.f / photoModel.getDrawableIntrinsicWidth();
+        final float beginScaleY = widthPixels * 1.f / photoModel.getDrawableIntrinsicHeight();
 
         // x 方向缩小
         final ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "scaleX", beginScaleX, 1);
@@ -219,9 +218,8 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         final ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(mImagePlaceholder, "y", beginY, endY);
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        final boolean openImageTransAnim = attr.isOpenImageTransAnim();
-        animatorSet.setDuration(openImageTransAnim ? 300 : 0);
-        animatorSet.setStartDelay(openImageTransAnim ? 50 : 0);
+        animatorSet.setDuration(openAnim ? 300 : 0);
+        animatorSet.setStartDelay(openAnim ? 50 : 0);
         animatorSet.playTogether(scaleXAnima, scaleYAnima, tranXAnima, tranYAnima);
 
         animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -253,30 +251,18 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
 
+    /**
+     * 显示大图
+     *
+     * @param position
+     */
     @Override
     public void onPageSelected(final int position) {
+        LogUtil.e("kalu", "onPageSelected");
 
         final ImageView image = (ImageView) viewPager.getChildAt(position);
-        Object tag = image.getTag(image.getId());
-
-        final String bigUrl = attr.getImageUrlList().get(position);
-
-        if (null != tag && tag instanceof String && bigUrl.equals(tag)) {
-            return;
-        }
-
-        // 1. 设置默认图片
-        if (TextUtils.isEmpty(bigUrl)) {
-
-            if (attr.getImageDefaultResource() != -1) {
-                image.setImageResource(attr.getImageDefaultResource());
-            }
-
-        } else {
-
-            image.setTag(image.getId(), bigUrl);
-            GlideUtil.loadImagePhoto(mActivity, image, bigUrl);
-        }
+        final String url = (String) image.getTag(image.getId());
+        GlideUtil.loadImagePhoto(getContext(), image, url);
     }
 
     @Override
@@ -310,53 +296,19 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
     public static class Builder {
 
-        private Activity activity;
         private OnPhotoChangeListener listener;
 
         private int imageDefaultPosition = 0;
 
-        // 默认占位图
-        private int imageDefaultResource = -1;
-
         private boolean isOpenImageTransAnim = true;
         private int imageBackgroundColor = Color.BLACK;
-        private List<String> imageUrlList;
-        private List<String> imageLittleUrlList;
-        private List<ImageView> imageViews;
-        private boolean imageLongPressSave;
+
+        private List<PhotoModel> list;
+
+        private Activity activity;
 
         public Builder(Activity activity) {
             this.activity = activity;
-        }
-
-        public Builder setPhotoUrlList(List<String> imageUrlList) {
-            this.imageUrlList = imageUrlList;
-            return this;
-        }
-
-        public Builder setPhotoUrlList(String... imageUrl) {
-            this.imageUrlList = Arrays.asList(imageUrl);
-            return this;
-        }
-
-        public Builder setPhotoLittleUrlList(List<String> imageLittleUrlList) {
-            this.imageLittleUrlList = imageLittleUrlList;
-            return this;
-        }
-
-        public Builder setPhotoLittleUrlList(String... imageLittleUrlList) {
-            this.imageLittleUrlList = Arrays.asList(imageLittleUrlList);
-            return this;
-        }
-
-        public Builder setPhotoViewList(List<ImageView> imageViews) {
-            this.imageViews = imageViews;
-            return this;
-        }
-
-        public Builder setPhotoViewList(ImageView... views) {
-            this.imageViews = Arrays.asList(views);
-            return this;
         }
 
         public Builder setPhotoOpenTransAnim(boolean isOpenImageTransAnim) {
@@ -375,8 +327,13 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             return this;
         }
 
-        public Builder setPhotoDefaultResource(int imageDefaultResource) {
-            this.imageDefaultResource = imageDefaultResource;
+        public Builder setPhotoModelList(List<PhotoModel> list) {
+            this.list = list;
+            return this;
+        }
+
+        public Builder setPhotoModelList(PhotoModel... photoModels) {
+            list = Arrays.asList(photoModels);
             return this;
         }
 
@@ -385,75 +342,37 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
             return this;
         }
 
-        /**
-         * 长按保存
-         *
-         * @param imageLongPressSave 长按保存
-         * @return
-         */
-        public Builder setPhotoLongPressSave(boolean imageLongPressSave) {
-            this.imageLongPressSave = imageLongPressSave;
-            return this;
-        }
-
         public PhotoLayout show() {
 
-            PhotoAttr attr = new PhotoAttr();
-
-            if (imageUrlList != null && !imageUrlList.isEmpty()) {
-                attr.setImageUrlList(imageUrlList);
-            }
-
-            if (imageLittleUrlList != null && !imageLittleUrlList.isEmpty()) {
-                attr.setImageLittleUrlList(imageLittleUrlList);
-            }
-
-            if (null != listener) {
-                attr.setOnPhotoChangeListener(listener);
-            }
-
-            attr.setOpenImageTransAnim(isOpenImageTransAnim);
-            // 背景颜色
-            attr.setImageBackgroundColor(imageBackgroundColor);
-            // 默认显示图片位置
-            attr.setImageDefaultPosition(imageDefaultPosition);
-            // 默认图片占位图
-            attr.setImageDefaultResource(imageDefaultResource);
-            // 长按保存图片
-            attr.setImageLongPressSave(imageLongPressSave);
-
-            for (int i = 0; i < imageViews.size(); i++) {
-
-                ImageView imageOriginal = imageViews.get(i);
-
-                int imageWidth = imageOriginal.getWidth();
-                int imageHeight = imageOriginal.getHeight();
-
-                Drawable imageDrawable = imageOriginal.getDrawable();
-                if (null == imageDrawable) {
-                    int imageDefaultResource = attr.getImageDefaultResource();
-                    if (imageDefaultResource == 0) continue;
-                    imageOriginal.setImageResource(imageDefaultResource);
-                    imageDrawable = imageOriginal.getDrawable();
-                }
-
-                int imageDrawableIntrinsicWidth = imageDrawable.getIntrinsicWidth();
-                int imageDrawableIntrinsicHeight = imageDrawable.getIntrinsicHeight();
-
-                final int[] local = new int[2];
-                imageOriginal.getLocationInWindow(local);
-                int imageX = local[0] + (imageWidth - imageDrawableIntrinsicWidth) / 2;
-                int imageY = local[1] - DeviceUtil.getStatusHeight() + (imageHeight - imageDrawableIntrinsicHeight) / 2;
-
-                PhotoAttr.PhotoImageInfo photoImageInfo = new PhotoAttr.PhotoImageInfo();
-                photoImageInfo.setImageDrawableIntrinsicWidth(imageDrawableIntrinsicWidth);
-                photoImageInfo.setImageDrawableIntrinsicHeight(imageDrawableIntrinsicHeight);
-                photoImageInfo.setImageX(imageX);
-                photoImageInfo.setImageY(imageY);
-                attr.addImageLocalInfo(photoImageInfo);
-            }
-
-            return new PhotoLayout(activity, attr);
+            return new PhotoLayout(activity, true, list, imageDefaultPosition);
         }
+    }
+
+    public final static PhotoModel createModel(final ImageView image, final String url, final String littleUrl, @DrawableRes final int defaultId) {
+
+        final int imageWidth = image.getMeasuredWidth();
+        final int imageHeight = image.getMeasuredHeight();
+
+        Drawable imageDrawable = image.getDrawable();
+        if (null == imageDrawable) {
+            image.setImageResource(defaultId);
+            imageDrawable = image.getDrawable();
+        }
+
+        // 获取图片在屏幕上的可视高度宽度
+        final int minimumWidth = imageDrawable.getMinimumWidth();
+        final int minimumHeight = imageDrawable.getMinimumHeight();
+
+        final int imageDrawableIntrinsicWidth = imageDrawable.getIntrinsicWidth();
+        final int imageDrawableIntrinsicHeight = imageDrawable.getIntrinsicHeight();
+
+        final int[] local = new int[2];
+        image.getLocationInWindow(local);
+//        final int imageX = local[0] + (imageWidth - imageDrawableIntrinsicWidth) / 2;
+//        final int imageY = local[1] - DeviceUtil.getStatusHeight() + (imageHeight - imageDrawableIntrinsicHeight) / 2;
+
+        final ImageModel imageModel = new ImageModel(url, littleUrl, local[0], local[1], imageWidth, imageHeight, minimumWidth, minimumHeight, imageDrawableIntrinsicHeight, imageDrawableIntrinsicWidth);
+        LogUtil.e("kalu", "createModel ==> " + imageModel.toString());
+        return imageModel;
     }
 }

@@ -7,16 +7,37 @@ package com.demo.photo.photo;
 public interface PhotoModel {
 
     /**
-     * 小图
+     * 大图
      *
      * @return
      */
     String getUrl();
 
     /**
-     * 大图
+     * 小图
      *
      * @return
      */
     String getUrlLittle();
+
+    /**
+     * 图片真实显示背景drawable宽度
+     */
+    int getDrawableIntrinsicWidth();
+
+    /**
+     * 图片真实显示背景drawable高度
+     */
+    int getDrawableIntrinsicHeight();
+
+
+    /**
+     * 开始点击图片的x坐标, 左上角
+     */
+    int getImageX();
+
+    /**
+     * 开始点击图片的y坐标, 左上角
+     */
+    int getImageY();
 }

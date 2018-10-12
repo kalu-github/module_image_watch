@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':lib_glide', ':lib_photo'
