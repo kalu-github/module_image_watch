@@ -13,4 +13,16 @@
 ```
 
 ## 
-## 文档ing 2018-10-12 17:53:59
+## 使用方法
+```
+final PhotoModel model1 = PhotoLayout.createModel(image1, url1, url1, R.mipmap.ic_launcher);
+final PhotoModel model2 = PhotoLayout.createModel(image2, url2, url2, R.mipmap.ic_launcher);
+final PhotoModel model3 = PhotoLayout.createModel(image3, url3, url3, R.mipmap.ic_launcher);
+
+new PhotoLayout.Builder(MainActivity.this)
+        .setPhotoOpenTransAnim(true)
+        .setPhotoBackgroundColor(Color.BLACK)
+        .setPhotoDefaultPosition(0)
+        .setPhotoModelList(model1, model2, model3)
+        .show();
+```
