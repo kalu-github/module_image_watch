@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.demo.photo.photo.PhotoLayout;
-import com.demo.photo.photo.PhotoModel;
-import com.demo.photo.util.GlideUtil;
-
-import java.util.ArrayList;
+import lib.kalu.glide.util.GlideUtil;
+import lib.kalu.photo.photo.PhotoLayout;
+import lib.kalu.photo.photo.PhotoModel;
 
 public final class MainActivity extends AppCompatActivity {
 
