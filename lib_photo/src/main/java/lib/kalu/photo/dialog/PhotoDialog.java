@@ -31,7 +31,6 @@ public class PhotoDialog extends Dialog {
     public void show() {
         super.show();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         DisplayMetrics dm = new DisplayMetrics();
         WindowManager manager = (WindowManager) getContext().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);

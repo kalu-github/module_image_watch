@@ -2,9 +2,11 @@ package lib.kalu.photo.photo;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -12,7 +14,7 @@ import android.view.WindowManager;
  * description: 全屏显示
  * created by kalu on 2018/4/20 10:18
  */
-public final class PhotoDialog extends Dialog {
+final class PhotoDialog extends Dialog {
 
     private OnBackPressedListener listener;
 
@@ -27,17 +29,16 @@ public final class PhotoDialog extends Dialog {
 
     @Override
     public void show() {
-
+        super.show();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        WindowManager m = getWindow().getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = getWindow().getAttributes();
-        p.width = d.getWidth(); //设置dialog的宽度为当前手机屏幕的宽度
-        getWindow().setAttributes(p);
-
-        super.show();
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager manager = (WindowManager) getContext().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        manager.getDefaultDisplay().getMetrics(dm);
+        layoutParams.width = dm.widthPixels;
+        layoutParams.height = dm.heightPixels;
+        getWindow().setAttributes(layoutParams);
     }
 
     @Override
