@@ -9,6 +9,8 @@ import android.widget.FrameLayout;
 
 import java.util.List;
 
+import lib.kalu.bitmap.IntensifyImage;
+import lib.kalu.bitmap.IntensifyImageView;
 import lib.kalu.glide.util.GlideUtil;
 import lib.kalu.photo.util.LogUtil;
 
@@ -56,13 +58,13 @@ final class PhotoAdapter extends PagerAdapter {
         // step2
         final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
+
         final PhotoViewBack image1 = new PhotoViewBack(applicationContext);
         image1.setLayoutParams(params);
 
-        // step3
         container.addView(image1);
         image1.setTag(image1.getId(), url);
-        GlideUtil.loadImageSimple(image1.getContext(), image1, url);
+        GlideUtil.loadImage(applicationContext, image1, url);
 
         return image1;
     }

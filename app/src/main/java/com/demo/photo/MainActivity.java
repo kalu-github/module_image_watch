@@ -23,9 +23,9 @@ public final class MainActivity extends AppCompatActivity {
         final ImageView image1 = findViewById(R.id.image1);
         final ImageView image2 = findViewById(R.id.image2);
         final ImageView image3 = findViewById(R.id.image3);
-        GlideUtil.loadImageSimple(this, image1, url1);
-        GlideUtil.loadImageSimple(this, image2, url2);
-        GlideUtil.loadImageSimple(this, image3, url3);
+        GlideUtil.loadImage(this, image1, url1);
+        GlideUtil.loadImage(this, image2, url2);
+        GlideUtil.loadImage(this, image3, url3);
 
         image1.setOnClickListener(view -> {
 

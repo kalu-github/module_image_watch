@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import java.util.Arrays;
 import java.util.List;
 
+import lib.kalu.bitmap.IntensifyImageView;
 import lib.kalu.glide.util.GlideUtil;
 import lib.kalu.photo.model.ImageModel;
 import lib.kalu.photo.util.LogUtil;
@@ -59,7 +60,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
         mImagePlaceholder.setLayoutParams(params);
 
         final String urlLittle = list.get(begin).getUrlLittle();
-        GlideUtil.loadImageSimple(activity, mImagePlaceholder, urlLittle);
+        GlideUtil.loadImage(activity, mImagePlaceholder, urlLittle);
 
         // 2.初始化ViewPager
         viewPager = new ViewPager(activity.getApplicationContext());
@@ -188,7 +189,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         if (null != mImagePlaceholder) {
             final String imageUrl = photoModel.getUrl();
-            GlideUtil.loadImageSimple(getContext(), mImagePlaceholder, imageUrl);
+            GlideUtil.loadImage(getContext(), mImagePlaceholder, imageUrl);
             mImagePlaceholder.setVisibility(View.VISIBLE);
         }
 
@@ -259,7 +260,7 @@ public final class PhotoLayout extends FrameLayout implements ViewPager.OnPageCh
 
         final ImageView image = (ImageView) viewPager.getChildAt(position);
         final String url = (String) image.getTag(image.getId());
-        GlideUtil.loadImagePhoto(getContext(), image, url);
+        GlideUtil.loadImage(getContext(), image, url);
     }
 
     @Override

@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: android.arch.lifecycle:livedata-1.1.1">
     <CLASSES>
-      <root url="jar://D:/AndroidSDK/ide/studio_gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/699eb3393bfb5aee6a676fb752c4cfb6/jars/classes.jar!/" />
-      <root url="file://D:/AndroidSDK/ide/studio_gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/699eb3393bfb5aee6a676fb752c4cfb6/res" />
+      <root url="file://D:/IdeaConfig/AndroidStideoIdea/studio_gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/d0f388f50b1524e33e3b63f75be10069/res" />
+      <root url="jar://D:/IdeaConfig/AndroidStideoIdea/studio_gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/d0f388f50b1524e33e3b63f75be10069/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://D:/AndroidSDK/ide/studio_gradle/caches/modules-2/files-2.1/android.arch.lifecycle/livedata/1.1.1/bf27acaa4953c98cd519756ed7b7caacf94407d4/livedata-1.1.1-sources.jar!/" />
+      <root url="jar://D:/IdeaConfig/AndroidStideoIdea/studio_gradle/caches/modules-2/files-2.1/android.arch.lifecycle/livedata/1.1.1/bf27acaa4953c98cd519756ed7b7caacf94407d4/livedata-1.1.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

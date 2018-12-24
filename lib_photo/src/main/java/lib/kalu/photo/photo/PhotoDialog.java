@@ -7,8 +7,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.WindowManager;
+
+import lib.kalu.photo.R;
 
 /**
  * description: 全屏显示
@@ -19,12 +20,13 @@ final class PhotoDialog extends Dialog {
     private OnBackPressedListener listener;
 
     public PhotoDialog(Activity activity) {
-        super(activity);
+        super(activity, R.style.ShareDialog);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override

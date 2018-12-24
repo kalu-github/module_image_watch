@@ -2,17 +2,10 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
-
-
-
+    buildToolsVersion '28.0.3'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -29,7 +22,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    api project(path: ':lib_glide')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.+'
+    implementation project(path: ':lib_glide')
+    implementation project(path: ':lib_bitmap')
+    implementation 'com.android.support:support-v4:28.0.0'
 }

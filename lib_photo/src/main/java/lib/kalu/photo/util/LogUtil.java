@@ -2,8 +2,6 @@ package lib.kalu.photo.util;
 
 import android.util.Log;
 
-import com.demo.photo.Constants;
-
 /**
  * description: 日志工具类
  * created by kalu on 2016/11/19 11:58
@@ -11,7 +9,7 @@ import com.demo.photo.Constants;
 public final class LogUtil {
 
     //日志打印开关
-    private static boolean isLogEnable = Constants.IS_DEBUG;
+    private static boolean isLogEnable = true;
 
     public static void d(String tag, String msg) {
         if (isLogEnable) {
