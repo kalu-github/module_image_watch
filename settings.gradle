@@ -1,1 +1,2 @@
-include ':app', ':lib_glide', ':lib_photo', ':lib_bitmap'
+include ':app'
+include ':lib_image'

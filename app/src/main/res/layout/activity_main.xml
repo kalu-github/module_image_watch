@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/image1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/ic_launcher" />
+        <View
+            android:id="@+id/v_fit"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:background="@color/colorPrimary" />
 
-        <ImageView
-            android:id="@+id/image2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_below="@id/image1"
-            android:layout_weight="1"
-            android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/ic_launcher" />
+        <LinearLayout
+            android:id="@+id/vRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/title_height"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/image3"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_below="@id/image2"
-            android:layout_weight="1"
-            android:background="@color/stock_red"
-            android:padding="2dp"
-            android:src="@mipmap/ic_launcher" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点我刷新列表内容!"
+                android:textColor="#FFF"
+                android:textSize="19sp" />
+        </LinearLayout>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/v_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
-</RelativeLayout>
+    <lib.kalu.image.watch.ImageWatcher
+        android:id="@+id/v_image_watcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
