@@ -7,7 +7,7 @@ import android.view.View;
 public class Utils {
     public static void fitsSystemWindows(boolean isTranslucentStatus, View view) {
         if (isTranslucentStatus) {
-            view.getLayoutParams().height = calcStatusBarHeight(view.getContext());
+             view.getLayoutParams().height = calcStatusBarHeight(view.getContext());
         }
     }
 
